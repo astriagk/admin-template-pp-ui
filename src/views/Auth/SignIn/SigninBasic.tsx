@@ -49,14 +49,13 @@ export default function LoginPage() {
         password: password.trim(),
       }).unwrap()
       setAuthTokens(result.data.access_token, result.data.refresh_token)
-      LocalStorage.setItem(
-        STORAGE_KEYS.ADMIN,
-        JSON.stringify(result.data.admin)
-      )
-      toast.success(result.message || MESSAGES.AUTH.SUCCESS.LOGIN_SUCCESS)
-      router.push(paths.DASHBOARD)
-    } catch (err: any) {
-      toast.error(err || MESSAGES.AUTH.ERROR.LOGIN_FAILED)
+      LocalStorage.setItem(STORAGE_KEYS.ADMIN, JSON.stringify(result.data.admin))
+      toast.success(MESSAGES.AUTH.SUCCESS.LOGIN_SUCCESS, {
+        onClose: () => router.push(paths.DASHBOARD),
+        autoClose: 1500,
+      })
+    } catch (err) {
+      toast.error(MESSAGES.AUTH.ERROR.LOGIN_FAILED)
     }
   }
 
@@ -85,14 +84,14 @@ export default function LoginPage() {
                 </Link>
               </div>
               <h4 className="mb-6 font-bold leading-relaxed text-center text-transparent drop-shadow-lg ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-primary-500 vie-purple-500 to-pink-500 bg-clip-text">
-                Welcome Back, Sofia!
+                Welcome Back!
               </h4>
 
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-12 gap-5 mb-5 items-center">
                   <div className="col-span-12">
                     <label htmlFor="emailOrUsername" className="form-label">
-                      Email Or Username
+                      Email
                     </label>
                     <input
                       type="text"
@@ -100,7 +99,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full form-input"
-                      placeholder="Enter your email or username"
+                      placeholder="Enter your email"
                     />
                   </div>
                   <div className="col-span-12">
@@ -128,7 +127,7 @@ export default function LoginPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="col-span-12">
+                  {/* <div className="col-span-12">
                     <div className="flex items-center">
                       <div className="input-check-group grow">
                         <input
@@ -148,8 +147,8 @@ export default function LoginPage() {
                         Forgot Password?
                       </Link>
                     </div>
-                  </div>
-                  <div className="col-span-12">
+                  </div> */}
+                  <div className="col-span-12 mt-4">
                     <button
                       type="submit"
                       className="w-full btn btn-primary"
