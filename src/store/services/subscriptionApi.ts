@@ -22,7 +22,7 @@ export const subscriptionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSubscriptionPlans: builder.query<SubscriptionPlanListResponse, void>({
       query: () => ({
-        url: NEXT_PUBLIC_ADMIN_SCHOOL_SUBSCRIPTIONS_API,
+        url: NEXT_PUBLIC_SUBSCRIPTION_PLANS_API,
         method: ApiMethods.GET,
       }),
       providesTags: [AuthTags.SUBSCRIPTION],
