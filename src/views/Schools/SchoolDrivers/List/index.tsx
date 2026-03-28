@@ -49,7 +49,7 @@ const SchoolDriversList = () => {
   const itemsPerPage = 10
   const [currentPage, setCurrentPage] = useState(1)
 
-  const firstSchoolId = selectedSchoolId || schoolsData?.data?.[0]?._id || ''
+  const firstSchoolId = schoolId || selectedSchoolId || schoolsData?.data?.[0]?._id || ''
 
   const { data: schoolDriversData } = useGetSchoolDriversQuery(firstSchoolId, {
     skip: !firstSchoolId,

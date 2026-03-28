@@ -10,10 +10,12 @@ import {
   badgeMaps,
   headerKeys,
 } from '@src/shared/constants/columns'
+import { STORAGE_KEYS } from '@src/shared/constants/enums'
 import TableContainer from '@src/shared/custom/table/table'
 import { useGetSchoolsListQuery } from '@src/store/services/schoolApi'
 import { useGetSchoolSubscriptionsQuery } from '@src/store/services/subscriptionApi'
 import { formatDate } from '@src/utils/formatters'
+import LocalStorage from '@src/utils/LocalStorage'
 import { CirclePlus, Search } from 'lucide-react'
 import Select from 'react-select'
 
@@ -23,8 +25,11 @@ const SchoolSubscriptionsList = () => {
   const { data: schoolsData } = useGetSchoolsListQuery()
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>('')
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
+  const user = adminData ? JSON.parse(adminData) : null
+  const schoolId = user?.school_id
 
-  const firstSchoolId = selectedSchoolId || schoolsData?.data?.[0]?._id || ''
+  const firstSchoolId = schoolId || selectedSchoolId || schoolsData?.data?.[0]?._id || ''
 
   const { data: subscriptionsData } = useGetSchoolSubscriptionsQuery(
     firstSchoolId,
@@ -155,30 +160,32 @@ const SchoolSubscriptionsList = () => {
         <div className="col-span-12 card">
           <div className="card-header">
             <div className="grid items-center gap-3 grid-cols-12">
-              <div className="col-span-12 md:col-span-4 lg:col-span-5 xxl:col-span-3">
-                <div className="relative group/form grow">
-                  <Select<{ value: string; label: string }>
-                    classNamePrefix="select"
-                    options={schoolsData?.data?.map((school) => ({
-                      value: school._id,
-                      label: school.school_name,
-                    }))}
-                    value={
-                      schoolsData?.data
-                        ?.map((s) => ({
-                          value: s._id,
-                          label: s.school_name,
-                        }))
-                        .find((o) => o.value === selectedSchoolId) || null
-                    }
-                    onChange={(option) =>
-                      setSelectedSchoolId(option?.value || '')
-                    }
-                    placeholder="Filter by school"
-                    isClearable={true}
-                  />
+              {!schoolId && (
+                <div className="col-span-12 md:col-span-4 lg:col-span-5 xxl:col-span-3">
+                  <div className="relative group/form grow">
+                    <Select<{ value: string; label: string }>
+                      classNamePrefix="select"
+                      options={schoolsData?.data?.map((school) => ({
+                        value: school._id,
+                        label: school.school_name,
+                      }))}
+                      value={
+                        schoolsData?.data
+                          ?.map((s) => ({
+                            value: s._id,
+                            label: s.school_name,
+                          }))
+                          .find((o) => o.value === selectedSchoolId) || null
+                      }
+                      onChange={(option) =>
+                        setSelectedSchoolId(option?.value || '')
+                      }
+                      placeholder="Filter by school"
+                      isClearable={true}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="col-span-12 md:col-span-4 lg:col-span-4 xxl:col-span-3">
                 <div className="relative group/form grow">
                   <input

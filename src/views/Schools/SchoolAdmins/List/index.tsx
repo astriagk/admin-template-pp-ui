@@ -10,7 +10,7 @@ import {
   badgeMaps,
   headerKeys,
 } from '@src/shared/constants/columns'
-import { UserRoles } from '@src/shared/constants/enums'
+import { STORAGE_KEYS, UserRoles } from '@src/shared/constants/enums'
 import { MESSAGES } from '@src/shared/constants/messages'
 import TableContainer from '@src/shared/custom/table/table'
 import {
@@ -20,6 +20,7 @@ import {
 } from '@src/store/services/adminApi'
 import { useGetSchoolsListQuery } from '@src/store/services/schoolApi'
 import { formatDate } from '@src/utils/formatters'
+import LocalStorage from '@src/utils/LocalStorage'
 import { CirclePlus, Search } from 'lucide-react'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
@@ -132,11 +133,14 @@ const SchoolAdminsList = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [deactivateAdmin] = useDeactivateAdminMutation()
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
+  const user = adminData ? JSON.parse(adminData) : null
+  const schoolId = user?.school_id
 
   const itemsPerPage = 10
   const [currentPage, setCurrentPage] = useState(1)
 
-  const firstSchoolId = selectedSchoolId || schoolsData?.data?.[0]?._id || ''
+  const firstSchoolId = schoolId || selectedSchoolId || schoolsData?.data?.[0]?._id || ''
 
   const { data: schoolAdminsData } = useGetAdminListQuery()
 
@@ -146,8 +150,7 @@ const SchoolAdminsList = () => {
         (sa: AdminListItem) =>
           sa.is_active === true &&
           sa.admin_role === UserRoles.SCHOOL_ADMIN &&
-          (selectedSchoolId === '' ||
-            (sa as any).school_id === selectedSchoolId)
+          (schoolId ? (sa as any).school_id === schoolId : selectedSchoolId === '' || (sa as any).school_id === selectedSchoolId)
       ) || []
     )
   }, [schoolAdminsData, selectedSchoolId])
@@ -270,30 +273,32 @@ const SchoolAdminsList = () => {
         <div className="col-span-12 card">
           <div className="card-header">
             <div className="grid items-center gap-3 grid-cols-12">
-              <div className="col-span-12 lg:col-span-4 xxl:col-span-3">
-                <div id="sortingByClass">
-                  <Select
-                    classNamePrefix="select"
-                    options={(schoolsData?.data || []).map((school: any) => ({
-                      value: school._id,
-                      label: school.school_name,
-                    }))}
-                    value={
-                      (schoolsData?.data || [])
-                        .map((school: any) => ({
-                          value: school._id,
-                          label: school.school_name,
-                        }))
-                        .find((opt) => opt.value === selectedSchoolId) || null
-                    }
-                    onChange={(option: any) =>
-                      setSelectedSchoolId(option ? option.value : '')
-                    }
-                    placeholder="Select school"
-                    isClearable={true}
-                  />
+              {!schoolId && (
+                <div className="col-span-12 lg:col-span-4 xxl:col-span-3">
+                  <div id="sortingByClass">
+                    <Select
+                      classNamePrefix="select"
+                      options={(schoolsData?.data || []).map((school: any) => ({
+                        value: school._id,
+                        label: school.school_name,
+                      }))}
+                      value={
+                        (schoolsData?.data || [])
+                          .map((school: any) => ({
+                            value: school._id,
+                            label: school.school_name,
+                          }))
+                          .find((opt) => opt.value === selectedSchoolId) || null
+                      }
+                      onChange={(option: any) =>
+                        setSelectedSchoolId(option ? option.value : '')
+                      }
+                      placeholder="Select school"
+                      isClearable={true}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="col-span-12 md:col-span-9 lg:col-span-4 xxl:col-span-3">
                 <div className="relative group/form grow">
                   <input
