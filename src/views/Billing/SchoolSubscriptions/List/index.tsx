@@ -10,39 +10,61 @@ import {
   badgeMaps,
   headerKeys,
 } from '@src/shared/constants/columns'
-import { STORAGE_KEYS } from '@src/shared/constants/enums'
+import { ModelModes, STORAGE_KEYS } from '@src/shared/constants/enums'
 import TableContainer from '@src/shared/custom/table/table'
 import { useGetSchoolsListQuery } from '@src/store/services/schoolApi'
-import { useGetSchoolSubscriptionsQuery } from '@src/store/services/subscriptionApi'
-import { formatDate } from '@src/utils/formatters'
+import {
+  useGetAllSchoolSubscriptionsQuery,
+  useGetSchoolSubscriptionsQuery,
+} from '@src/store/services/subscriptionApi'
 import LocalStorage from '@src/utils/LocalStorage'
+import { formatDate } from '@src/utils/formatters'
 import { CirclePlus, Search } from 'lucide-react'
 import Select from 'react-select'
 
-import CreateSubscriptionModal from '../CreateSubscriptionModal'
+import CreateSubscriptionModal, {
+  SubscriptionModalState,
+} from '../CreateSubscriptionModal'
 
 const SchoolSubscriptionsList = () => {
   const { data: schoolsData } = useGetSchoolsListQuery()
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>('')
-  const [createModalOpen, setCreateModalOpen] = useState(false)
   const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
   const user = adminData ? JSON.parse(adminData) : null
   const schoolId = user?.school_id
 
-  const firstSchoolId = schoolId || selectedSchoolId || schoolsData?.data?.[0]?._id || ''
+  const filteredSchoolId = schoolId || selectedSchoolId
 
-  const { data: subscriptionsData } = useGetSchoolSubscriptionsQuery(
-    firstSchoolId,
-    {
-      skip: !firstSchoolId,
-    }
+  const { data: subscriptionsBySchool } = useGetSchoolSubscriptionsQuery(
+    filteredSchoolId,
+    { skip: !filteredSchoolId }
+  )
+  const { data: allSubscriptions } = useGetAllSchoolSubscriptionsQuery(
+    undefined,
+    { skip: !!filteredSchoolId }
   )
 
+  const subscriptionsData = filteredSchoolId
+    ? subscriptionsBySchool
+    : allSubscriptions
+
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [modal, setModal] = useState<SubscriptionModalState>({
+    open: false,
+    mode: ModelModes.CREATE,
+    data: null,
+  })
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
+
+  const openCreate = () =>
+    setModal({ open: true, mode: ModelModes.CREATE, data: null })
+  const openEdit = (row: SchoolSubscription) =>
+    setModal({ open: true, mode: ModelModes.EDIT, data: row })
+  const closeModal = () =>
+    setModal({ open: false, mode: ModelModes.CREATE, data: null })
 
   const itemsPerPage = 10
   const [currentPage, setCurrentPage] = useState(1)
@@ -126,28 +148,20 @@ const SchoolSubscriptionsList = () => {
           row.original.end_date ? formatDate(row.original.end_date) : '—',
       },
       {
-        accessorKey: accessorkeys.schoolSubscriptionPlans.maxDrivers,
-        header: headerKeys.schoolSubscriptionPlans.maxDrivers,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.max_drivers ?? '—',
-      },
-      {
-        accessorKey: accessorkeys.schoolSubscriptionPlans.maxStudents,
-        header: headerKeys.schoolSubscriptionPlans.maxStudents,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.max_students ?? '—',
-      },
-      {
-        accessorKey: accessorkeys.schoolSubscriptionPlans.billingContact,
-        header: headerKeys.schoolSubscriptionPlans.billingContact,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.billing_contact || '—',
-      },
-      {
-        accessorKey: accessorkeys.schoolSubscriptionPlans.autoRenew,
-        header: headerKeys.schoolSubscriptionPlans.autoRenew,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.auto_renew ? 'Yes' : 'No',
+        accessorKey: accessorkeys.schoolSubscriptionPlans.actions,
+        header: headerKeys.schoolSubscriptionPlans.actions,
+        cell: ({ row }: { row: { original: SchoolSubscription } }) => (
+          <div className="flex justify-end gap-2">
+            <button
+              className="btn btn-sub-gray btn-icon !size-8 rounded-md"
+              onClick={(e) => {
+                e.preventDefault()
+                openEdit(row.original)
+              }}>
+              <i className="ri-pencil-line"></i>
+            </button>
+          </div>
+        ),
       },
     ],
     []
@@ -203,7 +217,7 @@ const SchoolSubscriptionsList = () => {
               <div className="col-span-12 md:col-span-4 lg:col-span-4 lg:col-start-10 xxl:col-span-2 xxl:col-start-11 ltr:md:text-right rtl:md:text-left">
                 <button
                   className="btn btn-primary shrink-0"
-                  onClick={() => setCreateModalOpen(true)}>
+                  onClick={openCreate}>
                   <CirclePlus className="inline-block ltr:mr-1 rtl:ml-1 size-4" />{' '}
                   Create Subscription
                 </button>
@@ -218,6 +232,7 @@ const SchoolSubscriptionsList = () => {
                 data={paginatedData}
                 thClass="!font-medium cursor-pointer"
                 divClass="overflow-x-auto table-box whitespace-nowrap"
+                lastTrClass="text-end"
                 tableClass="table flush"
                 thtrClass="text-gray-500 bg-gray-100 dark:bg-dark-850 dark:text-dark-500"
               />
@@ -232,9 +247,9 @@ const SchoolSubscriptionsList = () => {
         </div>
       </div>
       <CreateSubscriptionModal
-        open={createModalOpen}
-        schoolId={firstSchoolId}
-        onClose={() => setCreateModalOpen(false)}
+        state={modal}
+        schoolId={filteredSchoolId}
+        onClose={closeModal}
       />
     </React.Fragment>
   )

@@ -214,6 +214,7 @@ const accessorkeys = {
     maxStudents: 'max_students',
     billingContact: 'billing_contact',
     autoRenew: 'auto_renew',
+    actions: 'actions',
   },
   parentSubscriptionsList: {
     id: 'id',
@@ -579,6 +580,7 @@ const headerKeys = {
     maxStudents: 'Max Students',
     billingContact: 'Billing Contact',
     autoRenew: 'Auto Renew',
+    actions: 'Actions',
   },
   parentSubscriptionsList: {
     id: '#',

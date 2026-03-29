@@ -59,6 +59,7 @@ const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
 
   // Populate form when editing or viewing
   useEffect(() => {
+    if (!show) return
     if (schoolData && (isEditMode || isViewMode)) {
       setValue('school_name', schoolData.school_name)
       setValue('address', schoolData.address)
@@ -80,7 +81,7 @@ const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
         setValue('city', '')
       }
     }
-  }, [schoolData, isEditMode, isViewMode, setValue])
+  }, [schoolData, isEditMode, isViewMode, setValue, show])
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const stateCode = e.target.value

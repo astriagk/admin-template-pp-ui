@@ -149,16 +149,13 @@ const AdminModal = ({
             </select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              className="btn btn-light btn-sm"
-              onClick={onClose}>
+            <button type="button" className="btn btn-light" onClick={onClose}>
               {isReadOnly ? 'Close' : 'Cancel'}
             </button>
             {!isReadOnly && (
               <button
                 type="submit"
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary"
                 disabled={creating || updating}>
                 {state.mode === ModelModes.CREATE ? 'Create' : 'Save'}
               </button>
