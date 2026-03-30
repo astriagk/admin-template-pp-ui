@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import { Student } from '@src/dtos/student'
 import BreadCrumb from '@src/shared/common/BreadCrumb'
+import StudentSearchCard from '@src/shared/common/StudentSearchCard'
 import {
   accessorkeys,
   badgeMaps,
@@ -21,7 +22,15 @@ import {
 } from '@src/store/services/subscriptionApi'
 import LocalStorage from '@src/utils/LocalStorage'
 import { formatDate } from '@src/utils/formatters'
-import { Plus, Search, Ticket, Trash2 } from 'lucide-react'
+import {
+  BadgeCheck,
+  CalendarDays,
+  CheckCircle2,
+  CreditCard,
+  Search,
+  Ticket,
+  Trash2,
+} from 'lucide-react'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
 
@@ -68,6 +77,7 @@ const RedemptionCodesGenerate = () => {
 
   const filteredStudents = allStudents.filter((student) => {
     if (selectedIds.has(student._id)) return false
+    if (student.redemption_code?.is_redeemed) return false
     if (!searchQuery.trim()) return false
     return getStudentName(student)
       .toLowerCase()
@@ -168,17 +178,11 @@ const RedemptionCodesGenerate = () => {
     <React.Fragment>
       <BreadCrumb title="Generate Redemption Codes" subTitle="Billing" />
       <div className="grid grid-cols-12 gap-x-space">
-        {/* Card 1: School & Subscription Selector */}
+        {/* Card 1: School & Subscription */}
         <div className="col-span-12 card">
-          <div className="card-header">
-            <h6 className="card-title">Select School</h6>
-            <p className="text-gray-500 dark:text-dark-500 text-sm">
-              Choose a school to generate redemption codes for its students
-            </p>
-          </div>
-          <div className="card-body">
-            {!user?.school_id && (
-              <div className="max-w-md mb-4">
+          {!user?.school_id && (
+            <div className="card-body pb-0">
+              <div className="max-w-md">
                 <Select<{ value: string; label: string }>
                   classNamePrefix="select"
                   options={schoolsData?.data?.map((school) => ({
@@ -202,69 +206,114 @@ const RedemptionCodesGenerate = () => {
                   isClearable={true}
                 />
               </div>
-            )}
+            </div>
+          )}
 
-            {selectedSchoolId && !isSubLoading && hasActiveSubscription && (
-              <div className="flex flex-wrap items-center gap-4 bg-gray-50 dark:bg-dark-850 rounded-lg p-4">
-                <div className="text-sm">
-                  <span className="font-medium text-gray-700 dark:text-dark-300">
-                    Plan:
-                  </span>{' '}
-                  {activeSubscription?.plan?.plan_name || '—'}
-                </div>
-                <div className="text-sm">
-                  <span className="font-medium text-gray-700 dark:text-dark-300">
-                    Status:
-                  </span>{' '}
-                  <span
-                    className={`badge inline-flex items-center gap-1 ${
-                      badgeMaps[
-                        activeSubscription?.subscription_status as keyof typeof badgeMaps
-                      ]?.className ?? ''
-                    }`}>
-                    {badgeMaps[
-                      activeSubscription?.subscription_status as keyof typeof badgeMaps
-                    ]?.label ?? activeSubscription?.subscription_status}
-                  </span>
-                </div>
-                <div className="text-sm">
-                  <span className="font-medium text-gray-700 dark:text-dark-300">
-                    Valid:
-                  </span>{' '}
-                  {formatDate(activeSubscription?.start_date || '')} –{' '}
-                  {formatDate(activeSubscription?.end_date || '')}
+          {selectedSchoolId && !isSubLoading && hasActiveSubscription && (
+            <>
+              <div className="card-header">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
+                    <CreditCard className="size-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h6 className="card-title">
+                        {activeSubscription?.plan?.plan_name || '—'}
+                      </h6>
+                      {activeSubscription?.plan?.plan_type && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 capitalize">
+                          <CalendarDays className="size-3" />
+                          {activeSubscription.plan.plan_type}
+                        </span>
+                      )}
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          activeSubscription?.subscription_status === 'active'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400'
+                            : activeSubscription?.subscription_status ===
+                                'expired'
+                              ? 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400'
+                              : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-dark-300'
+                        }`}>
+                        <BadgeCheck className="size-3" />
+                        {badgeMaps[
+                          activeSubscription?.subscription_status as keyof typeof badgeMaps
+                        ]?.label ?? activeSubscription?.subscription_status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-dark-400 mt-0.5">
+                      {activeSubscription?.school_name || '—'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            )}
+              <div className="card-body grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-gray-400 dark:text-dark-500 uppercase tracking-wide">
+                    Validity
+                  </span>
+                  <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-dark-200">
+                    <CalendarDays className="size-4 text-gray-400 dark:text-dark-500 shrink-0" />
+                    <span className="text-gray-400 dark:text-dark-500 text-xs">
+                      From
+                    </span>
+                    <span className="font-medium">
+                      {formatDate(activeSubscription?.start_date || '')}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-dark-200">
+                    <CalendarDays className="size-4 text-gray-400 dark:text-dark-500 shrink-0" />
+                    <span className="text-gray-400 dark:text-dark-500 text-xs">
+                      To
+                    </span>
+                    <span className="font-medium">
+                      {formatDate(activeSubscription?.end_date || '')}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-gray-400 dark:text-dark-500 uppercase tracking-wide">
+                    Features
+                  </span>
+                  {activeSubscription?.plan?.features?.map((f) => (
+                    <div
+                      key={f.key}
+                      className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-dark-200">
+                      <CheckCircle2 className="size-3.5 text-green-500 shrink-0" />
+                      {f.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
-            {selectedSchoolId && !isSubLoading && !hasActiveSubscription && (
+          {selectedSchoolId && !isSubLoading && !hasActiveSubscription && (
+            <div className="card-body">
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                 <p className="text-yellow-700 dark:text-yellow-300 text-sm">
                   No active subscription found for this school. Please create or
                   activate a subscription first.
                 </p>
               </div>
-            )}
+            </div>
+          )}
 
-            {selectedSchoolId && isSubLoading && (
+          {selectedSchoolId && isSubLoading && (
+            <div className="card-body">
               <p className="text-gray-500 dark:text-dark-500 text-sm">
                 Loading subscription info...
               </p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Card 2: Search Students */}
         {hasActiveSubscription && (
           <div className="col-span-12 card">
             <div className="card-header">
-              <h6 className="card-title">Search Students</h6>
-              <p className="text-gray-500 dark:text-dark-500 text-sm">
-                Search for students by name to add them for code generation
-              </p>
-            </div>
-            <div className="card-body">
-              <div className="relative group/form mb-4 max-w-md">
+              <div className="relative group/form max-w-xs w-full">
                 <input
                   type="text"
                   className="ltr:pl-9 rtl:pr-9 form-input ltr:group-[&.right]/form:pr-9 rtl:group-[&.right]/form:pl-9 ltr:group-[&.right]/form:pl-4 rtl:group-[&.right]/form:pr-4"
@@ -276,7 +325,8 @@ const RedemptionCodesGenerate = () => {
                   <Search className="text-gray-500 dark:text-dark-500 size-4 fill-gray-100 dark:fill-dark-850" />
                 </button>
               </div>
-
+            </div>
+            <div className="card-body">
               {searchQuery.trim() && (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {filteredStudents.length === 0 ? (
@@ -284,59 +334,13 @@ const RedemptionCodesGenerate = () => {
                       No students found matching &quot;{searchQuery}&quot;
                     </p>
                   ) : (
-                    filteredStudents.map((student) => {
-                      const statusKey = String(
-                        student.is_active ?? false
-                      ) as keyof typeof badgeMaps
-                      const badge =
-                        badgeMaps[statusKey] ?? badgeMaps['undefined']
-                      return (
-                        <div
-                          key={student._id}
-                          className="border border-gray-200 dark:border-dark-800 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-shadow">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="size-10 rounded-full bg-gray-200 dark:bg-dark-800 flex items-center justify-center text-sm font-medium text-gray-500 dark:text-dark-500">
-                                {(getStudentName(student) || '?')
-                                  .charAt(0)
-                                  .toUpperCase()}
-                              </div>
-                              <h6 className="font-semibold text-sm">
-                                {getStudentName(student) || '—'}
-                              </h6>
-                            </div>
-                            <span
-                              className={`badge inline-flex items-center gap-1 text-xs ${badge.className}`}>
-                              {badge.label}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-dark-500 space-y-1">
-                            <p>
-                              <span className="font-medium">Class:</span>{' '}
-                              {getStudentClass(student) || '—'}
-                            </p>
-                            {student.roll_number && (
-                              <p>
-                                <span className="font-medium">Roll No:</span>{' '}
-                                {student.roll_number}
-                              </p>
-                            )}
-                            {student.gender && (
-                              <p>
-                                <span className="font-medium">Gender:</span>{' '}
-                                {student.gender}
-                              </p>
-                            )}
-                          </div>
-                          <button
-                            className="btn btn-sub-primary btn-sm mt-2 w-full"
-                            onClick={() => handleAddStudent(student)}>
-                            <Plus className="inline-block ltr:mr-1 rtl:ml-1 size-4" />
-                            Add
-                          </button>
-                        </div>
-                      )
-                    })
+                    filteredStudents.map((student) => (
+                      <StudentSearchCard
+                        key={student._id}
+                        student={student}
+                        onAdd={handleAddStudent}
+                      />
+                    ))
                   )}
                 </div>
               )}

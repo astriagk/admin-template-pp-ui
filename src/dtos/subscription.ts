@@ -80,6 +80,7 @@ export interface SchoolSubscription {
   _id: string
   school_id: string
   plan_id: string
+  school_name?: string
   start_date: string
   end_date: string
   subscription_status: 'active' | 'expired' | 'cancelled'
@@ -107,10 +108,19 @@ export interface RedemptionCode {
   _id: string
   code: string
   status: 'available' | 'redeemed'
-  subscription_id: string
+  is_redeemed?: boolean
+  subscription_id?: string
+  school_subscription_id?: string
   school_id: string
+  plan_id?: string
   student_id?: string
   student_name?: string
+  student_class?: string
+  student_section?: string
+  parent_name?: string
+  parent_email?: string
+  parent_phone?: string
+  end_date?: string
   redeemed_at?: string
   created_at: string
 }

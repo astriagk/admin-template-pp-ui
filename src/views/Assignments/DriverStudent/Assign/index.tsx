@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import { Student } from '@src/dtos/student'
 import BreadCrumb from '@src/shared/common/BreadCrumb'
+import StudentSearchCard from '@src/shared/common/StudentSearchCard'
 import {
   accessorkeys,
   badgeMaps,
@@ -17,7 +18,7 @@ import { useCreateSchoolAssignmentMutation } from '@src/store/services/assignmen
 import { useGetSchoolDriversQuery } from '@src/store/services/schoolAdminApi'
 import { useGetStudentsBySchoolQuery } from '@src/store/services/studentApi'
 import LocalStorage from '@src/utils/LocalStorage'
-import { Plus, Search, Trash2, UserPlus } from 'lucide-react'
+import { Search, Trash2, UserPlus } from 'lucide-react'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
 
@@ -56,6 +57,7 @@ const AssignToStudents = () => {
 
   const filteredStudents = allStudents.filter((student) => {
     if (selectedIds.has(student._id)) return false
+    if (student.driver_assignment?.assignment_status === 'active') return false
     if (!searchQuery.trim()) return false
     return getStudentName(student)
       .toLowerCase()
@@ -76,7 +78,11 @@ const AssignToStudents = () => {
   }))
 
   const handleAssign = async () => {
-    if (!selectedDriverId || selectedStudents.length === 0) return
+    if (!selectedDriverId) {
+      toast.warning('Please select a driver before assigning.')
+      return
+    }
+    if (selectedStudents.length === 0) return
 
     try {
       await createAssignment({
@@ -172,12 +178,6 @@ const AssignToStudents = () => {
       <div className="grid grid-cols-12 gap-x-space">
         {/* Card 1: Search Students */}
         <div className="col-span-12 card">
-          <div className="card-header">
-            <h6 className="card-title">Search Students</h6>
-            <p className="text-gray-500 dark:text-dark-500 text-sm">
-              Search for students by name to add them for driver assignment
-            </p>
-          </div>
           <div className="card-body">
             <div className="relative group/form mb-4 max-w-md">
               <input
@@ -199,59 +199,13 @@ const AssignToStudents = () => {
                     No students found matching &quot;{searchQuery}&quot;
                   </p>
                 ) : (
-                  filteredStudents.map((student) => {
-                    const statusKey = String(
-                      student.is_active ?? false
-                    ) as keyof typeof badgeMaps
-                    const badge =
-                      badgeMaps[statusKey] ?? badgeMaps['undefined']
-                    return (
-                      <div
-                        key={student._id}
-                        className="border border-gray-200 dark:border-dark-800 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="size-10 rounded-full bg-gray-200 dark:bg-dark-800 flex items-center justify-center text-sm font-medium text-gray-500 dark:text-dark-500">
-                              {(getStudentName(student) || '?')
-                                .charAt(0)
-                                .toUpperCase()}
-                            </div>
-                            <h6 className="font-semibold text-sm">
-                              {getStudentName(student) || '—'}
-                            </h6>
-                          </div>
-                          <span
-                            className={`badge inline-flex items-center gap-1 text-xs ${badge.className}`}>
-                            {badge.label}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-dark-500 space-y-1">
-                          <p>
-                            <span className="font-medium">Class:</span>{' '}
-                            {getStudentClass(student) || '—'}
-                          </p>
-                          {student.roll_number && (
-                            <p>
-                              <span className="font-medium">Roll No:</span>{' '}
-                              {student.roll_number}
-                            </p>
-                          )}
-                          {student.gender && (
-                            <p>
-                              <span className="font-medium">Gender:</span>{' '}
-                              {student.gender}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          className="btn btn-sub-primary btn-sm mt-2 w-full"
-                          onClick={() => handleAddStudent(student)}>
-                          <Plus className="inline-block ltr:mr-1 rtl:ml-1 size-4" />
-                          Add
-                        </button>
-                      </div>
-                    )
-                  })
+                  filteredStudents.map((student) => (
+                    <StudentSearchCard
+                      key={student._id}
+                      student={student}
+                      onAdd={handleAddStudent}
+                    />
+                  ))
                 )}
               </div>
             )}
@@ -276,9 +230,8 @@ const AssignToStudents = () => {
                     classNamePrefix="select"
                     options={driverOptions}
                     value={
-                      driverOptions.find(
-                        (o) => o.value === selectedDriverId
-                      ) || null
+                      driverOptions.find((o) => o.value === selectedDriverId) ||
+                      null
                     }
                     onChange={(option) =>
                       setSelectedDriverId(option?.value || '')
@@ -289,7 +242,7 @@ const AssignToStudents = () => {
                 </div>
                 <button
                   className="btn btn-primary shrink-0"
-                  disabled={isAssigning || !selectedDriverId}
+                  disabled={isAssigning}
                   onClick={handleAssign}>
                   <UserPlus className="inline-block ltr:mr-1 rtl:ml-1 size-4" />
                   {isAssigning

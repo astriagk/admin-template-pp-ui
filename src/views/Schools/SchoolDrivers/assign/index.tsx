@@ -22,6 +22,21 @@ import { formatDate } from '@src/utils/formatters'
 import { Plus, Search, Trash2, UserPlus } from 'lucide-react'
 import { toast } from 'react-toastify'
 
+const AVATAR_COLORS = [
+  'bg-red-500',
+  'bg-orange-500',
+  'bg-amber-500',
+  'bg-green-500',
+  'bg-teal-500',
+  'bg-blue-500',
+  'bg-indigo-500',
+  'bg-violet-500',
+  'bg-pink-500',
+]
+
+const getAvatarColor = (name: string) =>
+  AVATAR_COLORS[(name.charCodeAt(0) || 0) % AVATAR_COLORS.length]
+
 const DriversAssignmentsList = () => {
   const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
   const user = adminData ? JSON.parse(adminData) : null
@@ -219,7 +234,8 @@ const DriversAssignmentsList = () => {
                             className="size-12 rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-base font-semibold text-primary shrink-0">
+                          <div
+                            className={`size-12 rounded-full flex items-center justify-center text-base font-semibold text-white shrink-0 ${getAvatarColor(driver.name || '?')}`}>
                             {(driver.name || '?').charAt(0).toUpperCase()}
                           </div>
                         )}

@@ -16,8 +16,11 @@ import TableContainer from '@src/shared/custom/table/table'
 import {
   useDeleteDriverStudentAssignmentMutation,
   useGetSchoolAssignmentsQuery,
+  useRemoveSchoolAssignmentMutation,
   useUpdateDriverStudentAssignmentMutation,
 } from '@src/store/services/assignmentApi'
+
+import ReassignDriverModal from './ReassignDriverModal'
 import LocalStorage from '@src/utils/LocalStorage'
 import { formatDate } from '@src/utils/formatters'
 import { Search } from 'lucide-react'
@@ -36,6 +39,8 @@ const DriverStudentAssignmentsList = () => {
   const { data: allData } = useGetSchoolAssignmentsQuery(schoolId)
   const [updateAssignment] = useUpdateDriverStudentAssignmentMutation()
   const [deleteAssignment] = useDeleteDriverStudentAssignmentMutation()
+  const [removeAssignment] = useRemoveSchoolAssignmentMutation()
+  const [reassignTarget, setReassignTarget] = useState<SchoolAssignment | null>(null)
 
   const handleApprove = async (id: string) => {
     try {
@@ -96,6 +101,23 @@ const DriverStudentAssignmentsList = () => {
     }
   }
 
+  const handleReassign = (assignment: SchoolAssignment) => {
+    setReassignTarget(assignment)
+  }
+
+  const handleUnassign = async (id: string) => {
+    try {
+      await removeAssignment(id).unwrap()
+      toast.success('Assignment removed successfully.')
+    } catch (error: any) {
+      toast.error(
+        error?.data?.error ||
+          error?.message ||
+          MESSAGES.ADMIN.ERROR.UPDATE_FAILED
+      )
+    }
+  }
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
@@ -134,9 +156,7 @@ const DriverStudentAssignmentsList = () => {
         accessorKey: accessorkeys.driverStudentList.driverUniqueId,
         header: headerKeys.driverStudentList.driverUniqueId,
         cell: ({ row }: { row: { original: SchoolAssignment } }) =>
-          row.original.driver?.driver_unique_id ||
-          row.original.driver_unique_id ||
-          '—',
+          row.original.driver?.driver_unique_id || '—',
       },
       {
         accessorKey: accessorkeys.driverStudentList.studentName,
@@ -212,12 +232,25 @@ const DriverStudentAssignmentsList = () => {
                   />
                 </>
               )}
-              {status === AssignmentStatus.ACTIVE && (
+              {status === AssignmentStatus.INACTIVE && (
                 <>
                   <button
+                    className="btn btn-sub-green btn-icon !size-8 rounded-md"
+                    data-tooltip-id="reassignTooltip"
+                    onClick={() => handleReassign(row.original)}>
+                    <i className="ri-user-follow-line"></i>
+                  </button>
+                  <Tooltip
+                    id="reassignTooltip"
+                    place="top"
+                    content="Reassign"
+                  />
+                </>
+              )}
+              {status === AssignmentStatus.ACTIVE && (
+                <>
+                  {/* <button
                     className="btn btn-sub-red btn-icon !size-8 rounded-md"
-                    data-tip="Deactivate Assignment"
-                    data-for="deactivateTooltip"
                     data-tooltip-id="deactivateTooltip"
                     onClick={() => handleDeactivate(_id)}>
                     <i className="ri-forbid-line"></i>
@@ -226,6 +259,17 @@ const DriverStudentAssignmentsList = () => {
                     id="deactivateTooltip"
                     place="top"
                     content="Deactivate Assignment"
+                  /> */}
+                  <button
+                    className="btn btn-sub-orange btn-icon !size-8 rounded-md"
+                    data-tooltip-id="unassignTooltip"
+                    onClick={() => handleUnassign(_id)}>
+                    <i className="ri-user-unfollow-line"></i>
+                  </button>
+                  <Tooltip
+                    id="unassignTooltip"
+                    place="top"
+                    content="Unassign"
                   />
                 </>
               )}
@@ -282,6 +326,11 @@ const DriverStudentAssignmentsList = () => {
           </div>
         </div>
       </div>
+      <ReassignDriverModal
+        assignment={reassignTarget}
+        schoolId={schoolId}
+        onClose={() => setReassignTarget(null)}
+      />
     </React.Fragment>
   )
 }
