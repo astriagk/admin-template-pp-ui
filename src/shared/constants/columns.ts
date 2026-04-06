@@ -145,7 +145,11 @@ const accessorkeys = {
   liveTracking: {
     id: 'id',
     tripId: '_id',
+    driverName: 'driver.name',
+    vehicleNumber: 'driver.vehicle_number',
     tripType: 'trip_type',
+    school: 'school.school_name',
+    studentCount: 'student_count',
     startTime: 'start_time',
     totalDistance: 'total_distance',
     actions: 'Actions',
@@ -506,9 +510,13 @@ const headerKeys = {
   liveTracking: {
     id: '#',
     tripId: 'Trip ID',
+    driverName: 'Driver',
+    vehicleNumber: 'Vehicle No.',
     tripType: 'Type',
+    school: 'School',
+    studentCount: 'Students',
     startTime: 'Started At',
-    totalDistance: 'Total Distance',
+    totalDistance: 'Distance (km)',
     actions: 'Actions',
   },
   tripDetails: {

@@ -13,9 +13,14 @@ import LocalStorage from '@src/utils/LocalStorage'
 import { formatDate } from '@src/utils/formatters'
 import { Search } from 'lucide-react'
 
+import TripDetailsModal from '../TripDetailsModal'
+
 const LiveTracking = () => {
-  const { data: tripsData } = useGetTripListQuery({ status: 'ongoing' })
+  const { data: tripsData } = useGetTripListQuery({
+    status: ['started', 'in_progress'],
+  })
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const user = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
     ? JSON.parse(LocalStorage.getItem(STORAGE_KEYS.ADMIN)!)
     : null
@@ -64,9 +69,21 @@ const LiveTracking = () => {
         header: headerKeys.liveTracking.id,
         cell: ({ row }: { row: { index: number } }) => row.index + 1,
       },
+      // {
+      //   accessorKey: accessorkeys.liveTracking.tripId,
+      //   header: headerKeys.liveTracking.tripId,
+      // },
       {
-        accessorKey: accessorkeys.liveTracking.tripId,
-        header: headerKeys.liveTracking.tripId,
+        accessorKey: accessorkeys.liveTracking.driverName,
+        header: headerKeys.liveTracking.driverName,
+        cell: ({ row }: { row: { original: Trip } }) =>
+          row.original.driver?.name || '-',
+      },
+      {
+        accessorKey: accessorkeys.liveTracking.vehicleNumber,
+        header: headerKeys.liveTracking.vehicleNumber,
+        cell: ({ row }: { row: { original: Trip } }) =>
+          row.original.driver?.vehicle_number || '-',
       },
       {
         accessorKey: accessorkeys.liveTracking.tripType,
@@ -74,6 +91,18 @@ const LiveTracking = () => {
         cell: ({ row }: { row: { original: Trip } }) => (
           <span className="capitalize">{row.original.trip_type}</span>
         ),
+      },
+      {
+        accessorKey: accessorkeys.liveTracking.school,
+        header: headerKeys.liveTracking.school,
+        cell: ({ row }: { row: { original: Trip } }) =>
+          row.original.school?.school_name || '-',
+      },
+      {
+        accessorKey: accessorkeys.liveTracking.studentCount,
+        header: headerKeys.liveTracking.studentCount,
+        cell: ({ row }: { row: { original: Trip } }) =>
+          row.original.student_count || '0',
       },
       {
         accessorKey: accessorkeys.liveTracking.startTime,
@@ -86,7 +115,7 @@ const LiveTracking = () => {
         header: headerKeys.liveTracking.totalDistance,
         cell: ({ row }: { row: { original: Trip } }) => {
           const value = row.original.total_distance
-          return value != null ? `${value} KM` : '-'
+          return value != null ? `${value} km` : '-'
         },
       },
       {
@@ -96,7 +125,7 @@ const LiveTracking = () => {
           <div className="flex justify-end gap-2">
             <button
               className="btn btn-sub-gray btn-icon !size-8 rounded-md"
-              onClick={() => console.log('Track', row.original)}>
+              onClick={() => setSelectedTrip(row.original)}>
               <i className="ri-map-line"></i>
             </button>
           </div>
@@ -163,6 +192,11 @@ const LiveTracking = () => {
           </div>
         </div>
       </div>
+      <TripDetailsModal
+        trip={selectedTrip}
+        isOpen={!!selectedTrip}
+        onClose={() => setSelectedTrip(null)}
+      />
     </React.Fragment>
   )
 }
