@@ -106,6 +106,27 @@ export const assignmentApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [AuthTags.ASSIGNMENT],
     }),
+    removeSchoolAssignment: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
+      query: (assignmentId) => ({
+        url: `${NEXT_PUBLIC_SCHOOL_ASSIGNMENTS_API}/${assignmentId}/remove`,
+        method: ApiMethods.POST,
+      }),
+      invalidatesTags: [AuthTags.ASSIGNMENT],
+    }),
+    reassignSchoolAssignment: builder.mutation<
+      { success: boolean; message: string },
+      { assignmentId: string; driver_id: string }
+    >({
+      query: ({ assignmentId, driver_id }) => ({
+        url: `${NEXT_PUBLIC_SCHOOL_ASSIGNMENTS_API}/${assignmentId}/reassign`,
+        method: ApiMethods.POST,
+        body: { driver_id },
+      }),
+      invalidatesTags: [AuthTags.ASSIGNMENT],
+    }),
   }),
 })
 
@@ -119,4 +140,6 @@ export const {
   useGetParentRequestedAssignmentsQuery,
   useDeleteDriverStudentAssignmentMutation,
   useCreateSchoolAssignmentMutation,
+  useRemoveSchoolAssignmentMutation,
+  useReassignSchoolAssignmentMutation,
 } = assignmentApi

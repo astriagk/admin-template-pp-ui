@@ -55,6 +55,12 @@ const SchoolsList = () => {
     setAddSchoolModalOpen(true)
   }
 
+  const handleViewSchool = (school: SchoolListItem) => {
+    setModalMode(ModelModes.VIEW)
+    setSelectedSchool(school)
+    setAddSchoolModalOpen(true)
+  }
+
   const schoolData: SchoolListItem[] = schoolsListData?.data ?? []
 
   const filteredSchoolRecords = schoolData.filter((item: SchoolListItem) =>
@@ -126,9 +132,7 @@ const SchoolsList = () => {
             <div className="flex justify-end gap-2">
               <button
                 className="btn btn-sub-primary btn-icon !size-8 rounded-md"
-                onClick={() =>
-                  router.push(`/schools/details/${row.original._id}`)
-                }>
+                onClick={() => handleViewSchool(row.original)}>
                 <i className="ri-eye-line"></i>
               </button>
               <button

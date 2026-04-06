@@ -19,9 +19,12 @@ import LocalStorage from '@src/utils/LocalStorage'
 import { formatDate, formatTime } from '@src/utils/formatters'
 import { Search } from 'lucide-react'
 
+import TripDetailsModal from '../TripDetailsModal'
+
 const TripsList = () => {
   const router = useRouter()
   const { data: tripsData } = useGetTripListQuery()
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const user = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
     ? JSON.parse(LocalStorage.getItem(STORAGE_KEYS.ADMIN)!)
     : null
@@ -141,10 +144,15 @@ const TripsList = () => {
         cell: ({ row }: { row: { original: any } }) => (
           <div className="flex justify-end gap-2">
             <button
+              className="btn btn-sub-gray btn-icon !size-8 rounded-md"
+              onClick={() => setSelectedTrip(row.original)}>
+              <i className="ri-map-line"></i>
+            </button>
+            {/* <button
               className="btn btn-sub-primary btn-icon !size-8 rounded-md"
               onClick={() => router.push(`/trips/details/${row.original._id}`)}>
               <i className="ri-eye-line"></i>
-            </button>
+            </button> */}
           </div>
         ),
       },
@@ -197,6 +205,11 @@ const TripsList = () => {
           </div>
         </div>
       </div>
+      <TripDetailsModal
+        trip={selectedTrip}
+        isOpen={!!selectedTrip}
+        onClose={() => setSelectedTrip(null)}
+      />
     </React.Fragment>
   )
 }

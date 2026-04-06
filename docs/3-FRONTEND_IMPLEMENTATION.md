@@ -82,6 +82,7 @@ This guide explains what the **frontend** (React/Vue/Angular app) needs to do fo
 ### Frontend Stack
 
 This guide covers **multiple frameworks**:
+
 - ✅ React / Vue / Angular (Web)
 - ✅ Flutter (Mobile iOS/Android)
 - ✅ Vanilla JavaScript
@@ -89,6 +90,7 @@ This guide covers **multiple frameworks**:
 ### Required Libraries
 
 **For React/Web:**
+
 ```bash
 npm install axios
 # or
@@ -96,6 +98,7 @@ npm install fetch-api
 ```
 
 **For Flutter:**
+
 ```bash
 flutter pub add razorpay_flutter
 flutter pub add http
@@ -127,7 +130,7 @@ Add Razorpay to your HTML or load dynamically:
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ping Parent</title>
+    <title>Skolo</title>
     <!-- Other scripts -->
   </head>
   <body>
@@ -147,12 +150,12 @@ Add Razorpay to your HTML or load dynamically:
 // Add to your payment component or context
 export const loadRazorpayScript = (): Promise<void> => {
   return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve();
-    document.body.appendChild(script);
-  });
-};
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.onload = () => resolve()
+    document.body.appendChild(script)
+  })
+}
 ```
 
 ### Step 2: Set Up API Configuration
@@ -162,17 +165,19 @@ Create an API service file:
 **services/razorpayService.ts**
 
 ```typescript
-import axios from "axios";
+import axios from 'axios'
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000/api";
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || 'http://localhost:3000/api'
 
 // Initialize axios with auth token
 const getAuthHeader = () => {
-  const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+  const token =
+    localStorage.getItem('authToken') || sessionStorage.getItem('authToken')
   return {
     Authorization: `Bearer ${token}`,
-  };
-};
+  }
+}
 
 export const razorpayService = {
   /**
@@ -180,11 +185,11 @@ export const razorpayService = {
    */
   async getConfig() {
     try {
-      const response = await axios.get(`${API_BASE_URL}/razorpay/config`);
-      return response.data.data;
+      const response = await axios.get(`${API_BASE_URL}/razorpay/config`)
+      return response.data.data
     } catch (error) {
-      console.error("Failed to get Razorpay config:", error);
-      throw error;
+      console.error('Failed to get Razorpay config:', error)
+      throw error
     }
   },
 
@@ -192,19 +197,23 @@ export const razorpayService = {
    * Create a new Razorpay order
    */
   async createOrder(orderData: {
-    amount: number; // Amount in rupees
-    currency?: string;
-    subscription_id?: string;
-    description?: string;
+    amount: number // Amount in rupees
+    currency?: string
+    subscription_id?: string
+    description?: string
   }) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/razorpay/orders`, orderData, {
-        headers: getAuthHeader(),
-      });
-      return response.data.data;
+      const response = await axios.post(
+        `${API_BASE_URL}/razorpay/orders`,
+        orderData,
+        {
+          headers: getAuthHeader(),
+        }
+      )
+      return response.data.data
     } catch (error) {
-      console.error("Failed to create order:", error);
-      throw error;
+      console.error('Failed to create order:', error)
+      throw error
     }
   },
 
@@ -212,10 +221,10 @@ export const razorpayService = {
    * Verify payment after checkout
    */
   async verifyPayment(verificationData: {
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-    payment_id: string; // Your internal payment ID
+    razorpay_order_id: string
+    razorpay_payment_id: string
+    razorpay_signature: string
+    payment_id: string // Your internal payment ID
   }) {
     try {
       const response = await axios.post(
@@ -224,14 +233,14 @@ export const razorpayService = {
         {
           headers: getAuthHeader(),
         }
-      );
-      return response.data;
+      )
+      return response.data
     } catch (error) {
-      console.error("Failed to verify payment:", error);
-      throw error;
+      console.error('Failed to verify payment:', error)
+      throw error
     }
   },
-};
+}
 ```
 
 ### Step 3: Create Environment Variables
@@ -262,10 +271,11 @@ dependencies:
     sdk: flutter
   razorpay_flutter: ^1.3.0
   http: ^1.1.0
-  dio: ^5.3.0  # For HTTP requests (alternative to http)
+  dio: ^5.3.0 # For HTTP requests (alternative to http)
 ```
 
 Then run:
+
 ```bash
 flutter pub get
 ```
@@ -277,7 +287,7 @@ flutter pub get
 ```gradle
 android {
     compileSdkVersion 33  // or higher
-    
+
     defaultConfig {
         minSdkVersion 21
     }
@@ -303,6 +313,7 @@ end
 ```
 
 Run:
+
 ```bash
 cd ios
 pod install
@@ -461,12 +472,12 @@ class _PaymentCheckoutState extends State<PaymentCheckout> {
       baseUrl: widget.apiBaseUrl,
       authToken: widget.authToken,
     );
-    
+
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-    
+
     _loadConfiguration();
   }
 
@@ -531,7 +542,7 @@ class _PaymentCheckoutState extends State<PaymentCheckout> {
       var options = {
         'key': _keyId,
         'amount': (widget.amount * 100).toInt(), // Amount in paise
-        'name': 'Ping Parent',
+        'name': 'Skolo',
         'description': widget.subscriptionName,
         'order_id': orderId,
         'prefill': {
@@ -592,14 +603,14 @@ class _PaymentCheckoutState extends State<PaymentCheckout> {
       _error = 'Payment failed: ${response.message}';
       _isLoading = false;
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Payment failed: ${response.message}'),
         backgroundColor: Colors.red,
       ),
     );
-    
+
     debugPrint('Payment error: ${response.code} - ${response.message}');
   }
 
@@ -779,7 +790,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ping Parent',
+      title: 'Skolo',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomePage(),
     );
@@ -792,7 +803,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ping Parent')),
+      appBar: AppBar(title: const Text('Skolo')),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
@@ -829,12 +840,13 @@ class AppConstants {
     defaultValue: 'http://localhost:3000/api',
   );
 
-  static const String appName = 'Ping Parent';
+  static const String appName = 'Skolo';
   static const String razorpayThemeColor = '#3399cc';
 }
 ```
 
 Build with environment variables:
+
 ```bash
 # Development
 flutter run --dart-define=API_BASE_URL=http://localhost:3000/api
@@ -959,7 +971,7 @@ export const PaymentCheckout: React.FC<PaymentCheckoutProps> = ({
       key: keyId, // Your Key ID
       amount: Math.round(amount * 100), // Amount in paise
       currency: "INR",
-      name: "Ping Parent",
+      name: "Skolo",
       description: subscriptionName,
       order_id: orderId, // The order ID from backend
       handler: handlePaymentSuccess, // Called after successful payment
@@ -1153,32 +1165,33 @@ For Redux integration, create actions and reducers:
 **redux/paymentSlice.ts**
 
 ```typescript
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { razorpayService } from "../services/razorpayService";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+
+import { razorpayService } from '../services/razorpayService'
 
 export const fetchRazorpayConfig = createAsyncThunk(
-  "payment/fetchConfig",
+  'payment/fetchConfig',
   async () => {
-    return await razorpayService.getConfig();
+    return await razorpayService.getConfig()
   }
-);
+)
 
 export const createPaymentOrder = createAsyncThunk(
-  "payment/createOrder",
+  'payment/createOrder',
   async (orderData: any) => {
-    return await razorpayService.createOrder(orderData);
+    return await razorpayService.createOrder(orderData)
   }
-);
+)
 
 export const verifyPayment = createAsyncThunk(
-  "payment/verifyPayment",
+  'payment/verifyPayment',
   async (verificationData: any) => {
-    return await razorpayService.verifyPayment(verificationData);
+    return await razorpayService.verifyPayment(verificationData)
   }
-);
+)
 
 const paymentSlice = createSlice({
-  name: "payment",
+  name: 'payment',
   initialState: {
     keyId: null,
     isLoading: false,
@@ -1188,33 +1201,33 @@ const paymentSlice = createSlice({
   extraReducers: (builder) => {
     // Handle fetch config
     builder.addCase(fetchRazorpayConfig.pending, (state) => {
-      state.isLoading = true;
-    });
+      state.isLoading = true
+    })
     builder.addCase(fetchRazorpayConfig.fulfilled, (state, action) => {
-      state.keyId = action.payload.keyId;
-      state.isLoading = false;
-    });
+      state.keyId = action.payload.keyId
+      state.isLoading = false
+    })
     builder.addCase(fetchRazorpayConfig.rejected, (state, action) => {
-      state.error = action.error.message;
-      state.isLoading = false;
-    });
+      state.error = action.error.message
+      state.isLoading = false
+    })
 
     // Handle create order
     builder.addCase(createPaymentOrder.pending, (state) => {
-      state.isLoading = true;
-    });
+      state.isLoading = true
+    })
     builder.addCase(createPaymentOrder.fulfilled, (state, action) => {
-      state.order = action.payload;
-      state.isLoading = false;
-    });
+      state.order = action.payload
+      state.isLoading = false
+    })
     builder.addCase(createPaymentOrder.rejected, (state, action) => {
-      state.error = action.error.message;
-      state.isLoading = false;
-    });
+      state.error = action.error.message
+      state.isLoading = false
+    })
   },
-});
+})
 
-export default paymentSlice.reducer;
+export default paymentSlice.reducer
 ```
 
 ---
@@ -1227,19 +1240,19 @@ export default paymentSlice.reducer;
 
 Use these for testing without real charges:
 
-| Card Type            | Number              | Expiry | CVV  |
-| -------------------- | ------------------- | ------ | ---- |
-| **Visa Success**     | 4111 1111 1111 1111 | 12/25  | 123  |
-| **Mastercard**       | 5555 5555 5555 4444 | 12/25  | 123  |
-| **Visa (Declined)**  | 4000 0000 0000 0002 | 12/25  | 123  |
-| **Amex**             | 3782 822463 10005   | 12/25  | 1234 |
+| Card Type           | Number              | Expiry | CVV  |
+| ------------------- | ------------------- | ------ | ---- |
+| **Visa Success**    | 4111 1111 1111 1111 | 12/25  | 123  |
+| **Mastercard**      | 5555 5555 5555 4444 | 12/25  | 123  |
+| **Visa (Declined)** | 4000 0000 0000 0002 | 12/25  | 123  |
+| **Amex**            | 3782 822463 10005   | 12/25  | 1234 |
 
 #### Test UPI IDs
 
-| UPI ID              | Result               |
-| ------------------- | -------------------- |
-| `success@razorpay`  | ✅ Payment succeeds  |
-| `failure@razorpay`  | ❌ Payment fails     |
+| UPI ID             | Result              |
+| ------------------ | ------------------- |
+| `success@razorpay` | ✅ Payment succeeds |
+| `failure@razorpay` | ❌ Payment fails    |
 
 ### Manual Testing Steps
 
@@ -1273,16 +1286,19 @@ Use these for testing without real charges:
 ### Testing in Different Environments
 
 **Development**
+
 ```env
 REACT_APP_API_URL=http://localhost:3000/api
 ```
 
 **Staging**
+
 ```env
 REACT_APP_API_URL=https://staging.yourdomain.com/api
 ```
 
 **Production**
+
 ```env
 REACT_APP_API_URL=https://yourdomain.com/api
 ```
@@ -1298,9 +1314,10 @@ REACT_APP_API_URL=https://yourdomain.com/api
 **Cause:** Script not loaded before using
 
 **Solution:**
+
 ```typescript
 // Ensure script is loaded
-await loadRazorpayScript();
+await loadRazorpayScript()
 // Then use Razorpay
 ```
 
@@ -1309,11 +1326,12 @@ await loadRazorpayScript();
 **Cause:** Backend not reachable or API error
 
 **Solution:**
+
 ```typescript
 try {
-  const order = await razorpayService.createOrder(data);
+  const order = await razorpayService.createOrder(data)
 } catch (error) {
-  console.error("Network error:", error);
+  console.error('Network error:', error)
   // Show user-friendly message
 }
 ```
@@ -1323,11 +1341,12 @@ try {
 **Cause:** KeyId not loaded or incorrect
 
 **Solution:**
+
 ```typescript
 // Verify keyId is loaded
-console.log("Key ID:", keyId);
+console.log('Key ID:', keyId)
 // Make sure config endpoint is called
-const config = await razorpayService.getConfig();
+const config = await razorpayService.getConfig()
 ```
 
 #### Error: "Payment verification failed"
@@ -1335,6 +1354,7 @@ const config = await razorpayService.getConfig();
 **Cause:** Invalid signature or payment not found
 
 **Solution:**
+
 ```typescript
 // Ensure all fields are correct
 const verificationData = {
@@ -1342,7 +1362,7 @@ const verificationData = {
   razorpay_payment_id: response.razorpay_payment_id,
   razorpay_signature: response.razorpay_signature,
   payment_id: paymentId, // Ensure this is correct
-};
+}
 ```
 
 ### Error Handling Best Practices
@@ -1350,25 +1370,25 @@ const verificationData = {
 ```typescript
 const handlePaymentError = (error: any) => {
   // Log for debugging
-  console.error("Payment error:", error);
+  console.error('Payment error:', error)
 
   // User-friendly message
-  let userMessage = "Payment failed. Please try again.";
+  let userMessage = 'Payment failed. Please try again.'
 
   if (error.response?.status === 401) {
-    userMessage = "Authentication failed. Please login again.";
-  } else if (error.code === "NETWORK_ERROR") {
-    userMessage = "Network error. Check your connection.";
+    userMessage = 'Authentication failed. Please login again.'
+  } else if (error.code === 'NETWORK_ERROR') {
+    userMessage = 'Network error. Check your connection.'
   } else if (error.message) {
-    userMessage = error.message;
+    userMessage = error.message
   }
 
   // Show to user
-  setError(userMessage);
+  setError(userMessage)
 
   // Optional: Send to error tracking service
   // logErrorToSentry(error);
-};
+}
 ```
 
 ---
@@ -1380,23 +1400,23 @@ const handlePaymentError = (error: any) => {
 ```typescript
 useEffect(() => {
   loadRazorpayScript().catch((err) => {
-    console.error("Failed to load Razorpay:", err);
-  });
-}, []);
+    console.error('Failed to load Razorpay:', err)
+  })
+}, [])
 ```
 
 ### 2. Handle Network Failures
 
 ```typescript
 try {
-  const order = await razorpayService.createOrder(data);
+  const order = await razorpayService.createOrder(data)
 } catch (error) {
-  if (error.code === "ECONNABORTED") {
-    setError("Request timeout. Please try again.");
+  if (error.code === 'ECONNABORTED') {
+    setError('Request timeout. Please try again.')
   } else if (error.response?.status === 500) {
-    setError("Server error. Please try again later.");
+    setError('Server error. Please try again later.')
   } else {
-    setError("Failed to create order.");
+    setError('Failed to create order.')
   }
 }
 ```
@@ -1405,7 +1425,7 @@ try {
 
 ```typescript
 // ✅ Good: Store in sessionStorage (cleared when tab closes)
-sessionStorage.setItem("authToken", token);
+sessionStorage.setItem('authToken', token)
 
 // ❌ Avoid: Storing sensitive data in localStorage
 // localStorage.setItem("authToken", token);
@@ -1418,21 +1438,21 @@ sessionStorage.setItem("authToken", token);
 
 ```typescript
 const retryPayment = async (maxRetries = 3) => {
-  let retries = 0;
+  let retries = 0
   while (retries < maxRetries) {
     try {
-      return await razorpayService.createOrder(data);
+      return await razorpayService.createOrder(data)
     } catch (error) {
-      retries++;
+      retries++
       if (retries < maxRetries) {
         // Wait before retry
-        await new Promise((resolve) => setTimeout(resolve, 1000 * retries));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * retries))
       } else {
-        throw error;
+        throw error
       }
     }
   }
-};
+}
 ```
 
 ### 5. Show Loading States
@@ -1449,18 +1469,18 @@ const retryPayment = async (maxRetries = 3) => {
 ### 6. Handle Duplicate Submissions
 
 ```typescript
-const [isSubmitting, setIsSubmitting] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false)
 
 const handleSubmit = async () => {
-  if (isSubmitting) return; // Prevent duplicate submission
+  if (isSubmitting) return // Prevent duplicate submission
 
-  setIsSubmitting(true);
+  setIsSubmitting(true)
   try {
     // Handle payment...
   } finally {
-    setIsSubmitting(false);
+    setIsSubmitting(false)
   }
-};
+}
 ```
 
 ### 7. Validate Input Data
@@ -1468,16 +1488,16 @@ const handleSubmit = async () => {
 ```typescript
 const validatePaymentData = (data: any) => {
   if (!data.amount || data.amount <= 0) {
-    throw new Error("Invalid amount");
+    throw new Error('Invalid amount')
   }
   if (!data.subscriptionId) {
-    throw new Error("Subscription ID required");
+    throw new Error('Subscription ID required')
   }
   if (!data.paymentId) {
-    throw new Error("Payment ID required");
+    throw new Error('Payment ID required')
   }
-  return true;
-};
+  return true
+}
 ```
 
 ### 8. Track Payment Completion
@@ -1486,15 +1506,15 @@ const validatePaymentData = (data: any) => {
 // Send event to analytics
 const trackPaymentSuccess = (paymentData: any) => {
   // Google Analytics
-  gtag?.("event", "payment_success", {
+  gtag?.('event', 'payment_success', {
     value: paymentData.amount,
-    currency: "INR",
+    currency: 'INR',
     transaction_id: paymentData.id,
-  });
+  })
 
   // Mixpanel or other analytics
   // mixpanel.track("Payment Success", paymentData);
-};
+}
 ```
 
 ---
@@ -1506,6 +1526,7 @@ const trackPaymentSuccess = (paymentData: any) => {
 **Problem:** Button clicked but checkout doesn't appear
 
 **Solutions:**
+
 1. Check browser console for errors
 2. Verify `keyId` is loaded: `console.log(keyId)`
 3. Verify script is loaded: `console.log(window.Razorpay)`
@@ -1516,6 +1537,7 @@ const trackPaymentSuccess = (paymentData: any) => {
 **Problem:** Payment goes through but verification returns error
 
 **Solutions:**
+
 1. Verify `payment_id` matches your internal record
 2. Check JWT token is still valid
 3. Verify backend endpoint is working
@@ -1526,6 +1548,7 @@ const trackPaymentSuccess = (paymentData: any) => {
 **Problem:** "Access to XMLHttpRequest blocked by CORS policy"
 
 **Solutions:**
+
 1. Verify backend has CORS enabled
 2. Check frontend origin is in CORS whitelist
 3. For development, ensure backend runs on correct port
@@ -1535,17 +1558,18 @@ const trackPaymentSuccess = (paymentData: any) => {
 **Problem:** JWT token expires during payment process
 
 **Solutions:**
+
 ```typescript
 // Refresh token before payment
 const refreshTokenIfNeeded = async () => {
-  const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem('authToken')
   if (isTokenExpired(token)) {
-    await refreshToken();
+    await refreshToken()
   }
-};
+}
 
 // Call before payment
-await refreshTokenIfNeeded();
+await refreshTokenIfNeeded()
 ```
 
 ---
@@ -1598,41 +1622,45 @@ Before deploying to production:
 ## Quick Reference
 
 ### 1. Get Config
+
 ```typescript
-const config = await razorpayService.getConfig();
+const config = await razorpayService.getConfig()
 // Returns: { keyId: "rzp_test_..." }
 ```
 
 ### 2. Create Order
+
 ```typescript
 const order = await razorpayService.createOrder({
   amount: 500,
-  currency: "INR",
-  subscription_id: "sub_123",
-  description: "Monthly subscription"
-});
+  currency: 'INR',
+  subscription_id: 'sub_123',
+  description: 'Monthly subscription',
+})
 // Returns: { id: "order_...", amount: 50000, ... }
 ```
 
 ### 3. Open Checkout
+
 ```typescript
 const rzp = new (window as any).Razorpay({
   key: keyId,
   amount: order.amount,
   order_id: order.id,
-  handler: handleSuccess
-});
-rzp.open();
+  handler: handleSuccess,
+})
+rzp.open()
 ```
 
 ### 4. Verify Payment
+
 ```typescript
 const result = await razorpayService.verifyPayment({
   razorpay_order_id: response.razorpay_order_id,
   razorpay_payment_id: response.razorpay_payment_id,
   razorpay_signature: response.razorpay_signature,
-  payment_id: paymentId
-});
+  payment_id: paymentId,
+})
 // Returns: { success: true, data: { ... } }
 ```
 

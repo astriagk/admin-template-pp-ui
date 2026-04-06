@@ -10,7 +10,7 @@ import {
   badgeMaps,
   headerKeys,
 } from '@src/shared/constants/columns'
-import { ModelModes, UserRolesType } from '@src/shared/constants/enums'
+import { ModelModes, UserRoles, UserRolesType } from '@src/shared/constants/enums'
 import { MESSAGES } from '@src/shared/constants/messages'
 import TableContainer from '@src/shared/custom/table/table'
 import {
@@ -20,12 +20,19 @@ import {
 } from '@src/store/services/adminApi'
 import { formatDate } from '@src/utils/formatters'
 import { CirclePlus, Search } from 'lucide-react'
+import Select from 'react-select'
 import { toast } from 'react-toastify'
 
 import AdminModal, { AdminModalState } from './components/adminModal'
 
+const roleOptions = Object.entries(UserRolesType).map(([value, label]) => ({
+  value,
+  label,
+}))
+
 const AdminsList = () => {
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedRole, setSelectedRole] = useState<string>('')
   const { data: adminListData } = useGetAdminListQuery()
   const [activateAdmin] = useActivateAdminMutation()
   const [deactivateAdmin] = useDeactivateAdminMutation()
@@ -45,7 +52,13 @@ const AdminsList = () => {
   const adminData: AdminListItem[] = adminListData?.data ?? []
 
   const filteredRecords = adminData.filter((item: AdminListItem) => {
-    return item.username.toLowerCase().includes(searchQuery.toLowerCase())
+    const query = searchQuery.toLowerCase()
+    const matchesSearch =
+      item.username.toLowerCase().includes(query) ||
+      item.email.toLowerCase().includes(query) ||
+      item.phone_number.includes(searchQuery)
+    const matchesRole = selectedRole === '' || item.admin_role === selectedRole
+    return matchesSearch && matchesRole
   })
 
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -195,7 +208,7 @@ const AdminsList = () => {
                   <input
                     type="text"
                     className="ltr:pl-9 rtl:pr-9 form-input ltr:group-[&.right]/form:pr-9 rtl:group-[&.right]/form:pl-9 ltr:group-[&.right]/form:pl-4 rtl:group-[&.right]/form:pr-4"
-                    placeholder="Search by Username"
+                    placeholder="Search by Username, Email or Phone"
                     value={searchQuery}
                     onChange={handleSearchChange}
                   />
@@ -203,6 +216,18 @@ const AdminsList = () => {
                     <Search className="text-gray-500 dark:text-dark-500 size-4 fill-gray-100 dark:fill-dark-850" />
                   </button>
                 </div>
+              </div>
+              <div className="col-span-12 lg:col-span-4 xxl:col-span-3">
+                <Select
+                  classNamePrefix="select"
+                  options={roleOptions}
+                  value={roleOptions.find((o) => o.value === selectedRole) || null}
+                  onChange={(option: any) =>
+                    setSelectedRole(option ? option.value : '')
+                  }
+                  placeholder="Filter by Role"
+                  isClearable={true}
+                />
               </div>
               <div className="col-span-12 md:col-span-3 lg:col-span-3 lg:col-start-10 xxl:col-span-2 xxl:col-start-11 ltr:md:text-right rtl:md:text-left">
                 <button

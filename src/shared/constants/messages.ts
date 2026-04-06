@@ -9,7 +9,8 @@ export const MESSAGES = {
       LOGIN_SUCCESS: 'Login successful!',
     },
     ERROR: {
-      LOGIN_FAILED: 'Login failed. Please try again.',
+      LOGIN_FAILED:
+        'Login failed. Please check your credentials and try again.',
     },
   },
   ADMIN: {

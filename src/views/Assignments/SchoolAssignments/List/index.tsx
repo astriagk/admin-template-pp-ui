@@ -10,6 +10,7 @@ import {
   badgeMaps,
   headerKeys,
 } from '@src/shared/constants/columns'
+import { STORAGE_KEYS } from '@src/shared/constants/enums'
 import TableContainer from '@src/shared/custom/table/table'
 import {
   useApproveSchoolAssignmentMutation,
@@ -20,6 +21,7 @@ import {
 import { useGetDriverListQuery } from '@src/store/services/driverApi'
 import { useGetSchoolsListQuery } from '@src/store/services/schoolApi'
 import { formatAmount, formatDate } from '@src/utils/formatters'
+import LocalStorage from '@src/utils/LocalStorage'
 import { CirclePlus, Search } from 'lucide-react'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
@@ -100,6 +102,9 @@ const SchoolAssignmentsList = () => {
   const { data: schoolsData } = useGetSchoolsListQuery()
   const [selectedSchoolId, setSelectedSchoolId] = React.useState<string>('')
   const [modalOpen, setModalOpen] = useState(false)
+  const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
+  const user = adminData ? JSON.parse(adminData) : null
+  const schoolId = user?.school_id
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [approveAssignment] = useApproveSchoolAssignmentMutation()
   const [rejectAssignment] = useRejectSchoolAssignmentMutation()
@@ -117,7 +122,7 @@ const SchoolAssignmentsList = () => {
     setSelectedSchoolId(option ? option.value : '')
   }
 
-  const firstSchoolId = selectedSchoolId || schoolsData?.data?.[0]?._id || ''
+  const firstSchoolId = schoolId || selectedSchoolId || schoolsData?.data?.[0]?._id || ''
 
   const { data: assignmentsData } = useGetSchoolAssignmentsQuery(
     firstSchoolId,
@@ -279,16 +284,18 @@ const SchoolAssignmentsList = () => {
         <div className="col-span-12 card">
           <div className="card-header">
             <div className="grid items-center gap-3 grid-cols-12">
-              <div className="col-span-12 lg:col-span-4 xxl:col-span-3">
-                <Select
-                  classNamePrefix="select"
-                  options={schoolOptions}
-                  value={selectedSchoolOption}
-                  onChange={handleSelectSchool}
-                  placeholder="Select school"
-                  isClearable={true}
-                />
-              </div>
+              {!schoolId && (
+                <div className="col-span-12 lg:col-span-4 xxl:col-span-3">
+                  <Select
+                    classNamePrefix="select"
+                    options={schoolOptions}
+                    value={selectedSchoolOption}
+                    onChange={handleSelectSchool}
+                    placeholder="Select school"
+                    isClearable={true}
+                  />
+                </div>
+              )}
               <div className="col-span-12 md:col-span-9 lg:col-span-4 xxl:col-span-3">
                 <div className="relative group/form grow">
                   <input

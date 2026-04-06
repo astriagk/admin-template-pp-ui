@@ -4,14 +4,15 @@ import React, { useEffect, useState } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
-import user77 from '@assets/images/avatar/user-77.png'
+import profileImage from '@assets/images/avatar/profile.png'
 import logoSmDark from '@assets/images/logo-sm-dark.png'
 import logoSm from '@assets/images/logo-sm-white.png'
 import logoWhite from '@assets/images/logo-white.png'
 import mainLogo from '@assets/images/main-logo.png'
 import { MainMenu, MegaMenu, SubMenu } from '@src/dtos'
+import { paths } from '@src/shared/common/DynamicTitle'
 import { STORAGE_KEYS, UserRolesType } from '@src/shared/constants/enums'
 import { LAYOUT_TYPES, SIDEBAR_SIZE } from '@src/shared/constants/layout'
 import {
@@ -90,6 +91,13 @@ const Sidebar = ({
   toggleSidebar,
 }: SidebarProps) => {
   const { t } = useTranslation()
+  const appRouter = useRouter()
+
+  const handleLogout = () => {
+    localStorage.clear()
+    appRouter.push(paths.AUTH.SIGNIN_BASIC)
+  }
+
   const [sidebarDropdownPosition, setSidebarDropdownPosition] =
     useState<DropdownPosition>('top-right')
   const router = usePathname()
@@ -263,7 +271,7 @@ const Sidebar = ({
                       dropdownClassName="dropdown w-full">
                       <DropdownButton colorClass="flex items-center w-full gap-2 p-4 text-left group-data-[sidebar=small]:px-0">
                         <Image
-                          src={user77}
+                          src={profileImage}
                           alt="user"
                           className="h-10 rounded-md shrink-0 group-data-[sidebar=small]:mx-auto"
                           width={40}
@@ -279,14 +287,14 @@ const Sidebar = ({
                             ] || 'Admin Role'}
                           </p>
                         </div>
-                        {/* <div className="shrink-0 text-sidebar-text group-data-[sidebar=icon]:hidden group-data-[sidebar=small]:hidden group-data-[sidebar=medium]:hidden">
+                        <div className="shrink-0 text-sidebar-text group-data-[sidebar=icon]:hidden group-data-[sidebar=small]:hidden group-data-[sidebar=medium]:hidden">
                           <ChevronDown className="size-4" />
-                        </div> */}
+                        </div>
                       </DropdownButton>
-                      {/* <DropdownMenu menuClass="z-50 p-5 bg-white rounded-md shadow-lg !w-64 !left-3">
+                      <DropdownMenu menuClass="z-50 p-5 bg-white rounded-md shadow-lg !w-64 !left-3">
                         <div className="flex items-center gap-2">
                           <Image
-                            src={user77}
+                            src={profileImage}
                             alt="user"
                             className="rounded-full size-10"
                           />
@@ -299,7 +307,7 @@ const Sidebar = ({
                             </p>
                           </div>
                         </div>
-                        <div className="pt-2 mt-3 border-t border-gray-200 dark:border-dark-800">
+                        {/* <div className="pt-2 mt-3 border-t border-gray-200 dark:border-dark-800">
                           <ul>
                             <li>
                               <Link
@@ -342,16 +350,16 @@ const Sidebar = ({
                               </Link>{' '}
                             </li>
                           </ul>
-                        </div>
+                        </div> */}
                         <div className="pt-2 mt-3 border-t border-gray-200 dark:border-dark-800">
-                          <Link
-                            href="#!"
-                            className="!px-0 !py-1.5 before:hidden link link-primary">
+                          <button
+                            className="!px-0 !py-1.5 before:hidden link link-primary"
+                            onClick={handleLogout}>
                             <LogOut className="inline-block mr-2 size-4" /> Log
                             Out
-                          </Link>
+                          </button>
                         </div>
-                      </DropdownMenu> */}
+                      </DropdownMenu>
                     </Dropdown>
                   </div>
                 </div>

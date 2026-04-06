@@ -224,7 +224,7 @@ const menu: MegaMenu[] = [
   },
   {
     title: 'School Drivers',
-    lang: 'pe-school-drivers-group',
+    lang: 'pe-school-drivers',
     icon: 'bus',
     link: '#',
     separator: false,

@@ -59,6 +59,7 @@ export const schoolApi = baseApi.injectEndpoints({
 export const {
   useGetSchoolsListQuery,
   useLazyGetSchoolsListQuery,
+  useGetSchoolDetailsQuery,
   useLazyGetSchoolDetailsQuery,
   useCreateSchoolMutation,
   useUpdateSchoolMutation,

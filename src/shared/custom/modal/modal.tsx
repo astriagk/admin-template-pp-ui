@@ -133,6 +133,8 @@ const Modal: React.FC<CustomModalProps> = ({
       }, 300)
 
       return () => clearTimeout(timeout)
+    } else {
+      closeWithAnimation()
     }
   }, [isOpen])
 

@@ -1,4 +1,4 @@
-# 🚀 START HERE - Ping Parent Admin Template
+# 🚀 START HERE - Skolo Admin Template
 
 Welcome! This guide will get you up and running quickly.
 
@@ -9,7 +9,9 @@ Welcome! This guide will get you up and running quickly.
 All documentation is in the [docs/](docs/) folder. Here's what you have:
 
 ### 1. [GET_STARTED_NOW.md](docs/GET_STARTED_NOW.md) ⭐ **START HERE!**
+
 **Your exact next steps to start building today**
+
 - First 30 minutes walkthrough
 - Create your first page
 - Add API integration
@@ -17,7 +19,9 @@ All documentation is in the [docs/](docs/) folder. Here's what you have:
 - Action plan for your first week
 
 ### 2. [CLEANUP_GUIDE.md](docs/CLEANUP_GUIDE.md) 💡 **Answer: Keep or Delete?**
+
 **Should you keep the template or clean it up?**
+
 - What to keep (essential components)
 - What to delete (demo content)
 - Progressive cleanup strategy
@@ -25,7 +29,9 @@ All documentation is in the [docs/](docs/) folder. Here's what you have:
 - **TL;DR: Keep everything, build your features, clean up later**
 
 ### 3. [AUTHENTICATION_EXAMPLE.md](docs/AUTHENTICATION_EXAMPLE.md) 🔐 **Complete Auth Example**
+
 **Production-ready authentication implementation**
+
 - Login/Signup with real API
 - JWT token management
 - Protected routes
@@ -33,7 +39,9 @@ All documentation is in the [docs/](docs/) folder. Here's what you have:
 - Copy-paste ready code
 
 ### 4. [TEMPLATE_GUIDE.md](docs/TEMPLATE_GUIDE.md) 📖 **Complete Reference**
+
 **Everything about the template**
+
 - Tech stack
 - Project structure
 - Layout system
@@ -42,7 +50,9 @@ All documentation is in the [docs/](docs/) folder. Here's what you have:
 - Best practices
 
 ### 5. [QUICK_START.md](docs/QUICK_START.md) ⚡ **Code Recipes**
+
 **Quick solutions for common tasks**
+
 - Create pages
 - Build forms
 - Add charts
@@ -51,14 +61,18 @@ All documentation is in the [docs/](docs/) folder. Here's what you have:
 - Common Tailwind classes
 
 ### 6. [COMPONENT_REFERENCE.md](docs/COMPONENT_REFERENCE.md) 🎨 **UI Components**
+
 **Complete component library reference**
+
 - All UI components with code examples
 - Forms, tables, charts
 - Layout components
 - Code you can copy-paste
 
 ### 7. [PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) 📁 **Architecture Guide**
+
 **Where everything belongs**
+
 - Directory structure
 - File organization
 - Naming conventions
@@ -85,16 +99,20 @@ All documentation is in the [docs/](docs/) folder. Here's what you have:
 ## 🏃 Quick Start (5 Minutes)
 
 ### Step 1: Install & Run
+
 ```bash
 yarn install
 yarn dev
 ```
+
 Visit: http://localhost:3000
 
 ### Step 2: Create Your First Page
+
 Follow the first 30 minutes in [docs/GET_STARTED_NOW.md](docs/GET_STARTED_NOW.md)
 
 ### Step 3: Add API Integration
+
 Copy the examples from [docs/AUTHENTICATION_EXAMPLE.md](docs/AUTHENTICATION_EXAMPLE.md)
 
 ---
@@ -102,78 +120,89 @@ Copy the examples from [docs/AUTHENTICATION_EXAMPLE.md](docs/AUTHENTICATION_EXAM
 ## 📋 What This Template Includes
 
 ### 🎨 **10 Dashboard Types**
+
 eCommerce, Analytics, CRM, Email, Hospital, File Manager, Projects, School, Music
 
 ### 📱 **13 Feature Apps**
+
 Calendar, Chat, CRM, eCommerce, Email, Events, File Manager, Hospital, Invoice, Mailbox, Orders, Projects, School
 
 ### 🧩 **35+ UI Components**
+
 Accordion, Alerts, Avatar, Badge, Breadcrumb, Buttons, Cards, Drawer, Dropdown, Modal, Tabs, Timeline, Tooltips, and more
 
 ### 📊 **21 Chart Types**
+
 ApexCharts integration with Area, Bar, Line, Pie, Donut, Scatter, Radar, and many more
 
 ### 📝 **13 Form Elements**
+
 Inputs, Selects, Date pickers, Range sliders, File uploads, Validation
 
 ### 🎨 **Multiple Layouts**
+
 Vertical, Horizontal, Modern, Boxed, Semi-box
 
 ### 🌙 **Theming**
+
 - Light/Dark mode
 - 8 accent colors
 - Customizable sidebar
 - RTL support
 
 ### 🌍 **14 Languages**
+
 Full internationalization support
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Technology | Version | Purpose |
-|-----------|---------|---------|
-| Next.js | 15.1.7 | React framework |
-| React | 19.1.0 | UI library |
-| TypeScript | 5.8.2 | Type safety |
-| Tailwind CSS | 4.0.17 | Styling |
-| Redux Toolkit | 2.2.7 | State management |
-| ApexCharts | 3.51.0 | Charts |
-| React Hook Form | 7.52.2 | Forms |
+| Technology      | Version | Purpose          |
+| --------------- | ------- | ---------------- |
+| Next.js         | 15.1.7  | React framework  |
+| React           | 19.1.0  | UI library       |
+| TypeScript      | 5.8.2   | Type safety      |
+| Tailwind CSS    | 4.0.17  | Styling          |
+| Redux Toolkit   | 2.2.7   | State management |
+| ApexCharts      | 3.51.0  | Charts           |
+| React Hook Form | 7.52.2  | Forms            |
 
 ---
 
 ## 📁 Key File Locations
 
-| What | Where |
-|------|-------|
-| **Your Pages** | `src/app/(layout)/ping-parent/[page]/page.tsx` |
-| **Your Views** | `src/views/PingParent/[Feature]/index.tsx` |
-| **API Services** | `src/services/[feature].service.ts` |
-| **Redux State** | `src/slices/pingparent/reducer.ts` |
-| **Sidebar Menu** | `src/data/Sidebar/menu.ts` |
-| **Reusable Components** | `src/components/custom/` |
-| **Layout** | `src/layout/` |
-| **Styles** | `src/assets/css/` |
+| What                    | Where                                          |
+| ----------------------- | ---------------------------------------------- |
+| **Your Pages**          | `src/app/(layout)/ping-parent/[page]/page.tsx` |
+| **Your Views**          | `src/views/PingParent/[Feature]/index.tsx`     |
+| **API Services**        | `src/services/[feature].service.ts`            |
+| **Redux State**         | `src/slices/pingparent/reducer.ts`             |
+| **Sidebar Menu**        | `src/data/Sidebar/menu.ts`                     |
+| **Reusable Components** | `src/components/custom/`                       |
+| **Layout**              | `src/layout/`                                  |
+| **Styles**              | `src/assets/css/`                              |
 
 ---
 
 ## 🎓 Learning Path
 
 ### Beginner (Day 1-2)
+
 1. Read [GET_STARTED_NOW.md](docs/GET_STARTED_NOW.md)
 2. Create your first page (30 minutes)
 3. Explore the template dashboards
 4. Read [PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)
 
 ### Intermediate (Week 1)
+
 1. Build CRUD pages for your features
 2. Implement authentication from [AUTHENTICATION_EXAMPLE.md](docs/AUTHENTICATION_EXAMPLE.md)
 3. Add charts and tables
 4. Connect to your API
 
 ### Advanced (Week 2+)
+
 1. Customize theme
 2. Add complex features
 3. Optimize performance
@@ -184,6 +213,7 @@ Full internationalization support
 ## 🚦 Your Action Plan
 
 ### ✅ Today (2-3 hours)
+
 1. **Read** [GET_STARTED_NOW.md](docs/GET_STARTED_NOW.md)
 2. **Create** your first page
 3. **Set up** API service layer
@@ -191,18 +221,21 @@ Full internationalization support
 5. **Test** with mock data
 
 ### ✅ This Week
+
 1. Build Parents management (CRUD)
 2. Build Students management (CRUD)
 3. Add dashboard charts
 4. Implement authentication
 
 ### ✅ Next Week
+
 1. Build messaging system
 2. Add notifications
 3. Polish UI
 4. Connect real backend
 
 ### ❌ Don't Worry About (Yet)
+
 - Deleting demo code
 - Optimization
 - Custom theming
@@ -224,21 +257,27 @@ Full internationalization support
 ## 🤔 Common Questions
 
 ### Q: Will keeping all this code make my app slow?
+
 **A:** No! Next.js only bundles code you actually import and use. Unused code won't be in your final bundle.
 
 ### Q: When should I delete the demo dashboards?
+
 **A:** After you've built 2-3 of your own features and feel comfortable. See [CLEANUP_GUIDE.md](docs/CLEANUP_GUIDE.md)
 
 ### Q: How do I customize the theme?
+
 **A:** See [TEMPLATE_GUIDE.md](docs/TEMPLATE_GUIDE.md) - Section 10: Customization Guide
 
 ### Q: Where do I put my API calls?
+
 **A:** Create services in `src/services/[feature].service.ts` - Example in [GET_STARTED_NOW.md](docs/GET_STARTED_NOW.md)
 
 ### Q: How do I add authentication?
+
 **A:** Complete example in [AUTHENTICATION_EXAMPLE.md](docs/AUTHENTICATION_EXAMPLE.md)
 
 ### Q: What components are available?
+
 **A:** See [COMPONENT_REFERENCE.md](docs/COMPONENT_REFERENCE.md) for all 35+ components with code examples
 
 ---
@@ -246,6 +285,7 @@ Full internationalization support
 ## 📞 Need Help?
 
 ### Documentation Order:
+
 1. **Getting Started** → [GET_STARTED_NOW.md](docs/GET_STARTED_NOW.md)
 2. **Daily Reference** → [QUICK_START.md](docs/QUICK_START.md)
 3. **Components** → [COMPONENT_REFERENCE.md](docs/COMPONENT_REFERENCE.md)
@@ -255,6 +295,7 @@ Full internationalization support
 7. **Auth Example** → [AUTHENTICATION_EXAMPLE.md](docs/AUTHENTICATION_EXAMPLE.md)
 
 ### Debugging:
+
 - Check browser console (F12)
 - Check Redux DevTools
 - Look at similar examples in `src/views/Apps/`
@@ -291,7 +332,7 @@ Follow the first 30 minutes guide and create your first page!
 
 ## 🚀 Let's Build!
 
-You have everything you need to build Ping Parent. The template will save you months of work building UI components, layouts, and boilerplate code.
+You have everything you need to build Skolo. The template will save you months of work building UI components, layouts, and boilerplate code.
 
 **Your job now:** Build your unique features using the solid foundation provided.
 

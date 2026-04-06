@@ -12,6 +12,14 @@ export interface Trip {
   end_time?: string
   created_at: string
   updated_at: string
+  current_position?: {
+    accuracy: number
+    heading: number
+    latitude: number
+    longitude: number
+    speed: number
+    timestamp: string
+  } | null
   driver: {
     driver_id: string
     name: string
@@ -22,7 +30,23 @@ export interface Trip {
   }
   school: {
     school_id: string | null
+    school_name?: string
+    city?: string
   }
+  students_by_parent?: Array<{
+    parent_id: string
+    parent_name: string
+    parent_phone: string
+    pickup_address: string | null
+    students: Array<{
+      trip_student_id: string
+      student_id: string
+      student_name: string
+      attendance_status: string
+      pickup_status: string
+      sequence_order: number
+    }>
+  }>
 }
 
 export interface TripListResponse {
@@ -34,13 +58,21 @@ export interface TripListResponse {
 export interface TripDetailsResponse {
   success: boolean
   data: Trip & {
-    students: Array<{
-      student_id: string
-      name: string
-      pickup_status: string
-      drop_status: string
+    students_by_parent: Array<{
+      parent_id: string
+      parent_name: string
+      parent_phone: string
+      pickup_address: string | null
+      students: Array<{
+        trip_student_id: string
+        student_id: string
+        student_name: string
+        attendance_status: string
+        pickup_status: string
+        sequence_order: number
+      }>
     }>
-    tracking_history: Array<{
+    tracking_history?: Array<{
       lat: number
       lng: number
       timestamp: string
@@ -50,7 +82,7 @@ export interface TripDetailsResponse {
 }
 
 export interface TripFilters {
-  status?: string
+  status?: string[]
   trip_type?: string
   driver_id?: string
   school_id?: string
