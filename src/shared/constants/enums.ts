@@ -134,10 +134,38 @@ const PaymentTypeLabel: Record<PaymentType, string> = {
   [PaymentType.ONE_TIME]: 'One Time',
 }
 
+// Obfuscated storage keys — what actually appears in browser localStorage
 const STORAGE_KEYS = {
-  ACCESS_TOKEN: 'access_token',
-  REFRESH_TOKEN: 'refresh_token',
-  ADMIN: 'admin',
+  ACCESS_TOKEN:  '_pp_a',  // access_token
+  REFRESH_TOKEN: '_pp_r',  // refresh_token
+  ADMIN:         '_pp_u',  // admin
+}
+
+// Developer reference: obfuscated key → human-readable name
+const STORAGE_KEY_MAP: Record<string, string> = {
+  '_pp_a':    'access_token',
+  '_pp_r':    'refresh_token',
+  '_pp_u':    'admin',
+  '_pp_sc':   'data-sidebar-colors',
+  '_pp_ss':   'data-sidebar-size',
+  '_pp_tn':   'data-theme-nav-type',
+  '_pp_lt':   'data-layout-type',
+  '_pp_lw':   'data-layout-content-width',
+  '_pp_lm':   'data-layout-mode',
+  '_pp_sb':   'data-sidebar',
+  '_pp_lang': 'I18N_LANGUAGE',
+}
+
+// Maps HTML attribute names → obfuscated localStorage keys (used in layout/theme utils)
+const THEME_STORAGE_MAP: Record<string, string> = {
+  'data-sidebar-colors':       '_pp_sc',
+  'data-sidebar-size':         '_pp_ss',
+  'data-theme-nav-type':       '_pp_tn',
+  'data-layout-type':          '_pp_lt',
+  'data-layout-content-width': '_pp_lw',
+  'data-layout-mode':          '_pp_lm',
+  'data-sidebar':              '_pp_sb',
+  'I18N_LANGUAGE':             '_pp_lang',
 }
 
 export {
@@ -160,4 +188,6 @@ export {
   PaymentType,
   PaymentTypeLabel,
   STORAGE_KEYS,
+  STORAGE_KEY_MAP,
+  THEME_STORAGE_MAP,
 }

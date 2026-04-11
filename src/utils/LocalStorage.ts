@@ -1,25 +1,23 @@
+import { decryptValue, encryptValue } from './storageEncryption'
+
 export default class LocalStorage {
-  // get data from local storage
-  static getItem(key: string) {
-    if (typeof window === 'undefined') {
-      return null
-    }
-    return localStorage.getItem(key)
+  // get data from local storage (auto-decrypts)
+  static getItem(key: string): string | null {
+    if (typeof window === 'undefined') return null
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+    return decryptValue(raw)
   }
 
-  // set data in local storage
-  static setItem(key: string, value: string) {
-    if (typeof window === 'undefined') {
-      return null
-    }
-    return localStorage.setItem(key, value)
+  // set data in local storage (auto-encrypts)
+  static setItem(key: string, value: string): void {
+    if (typeof window === 'undefined') return
+    localStorage.setItem(key, encryptValue(value))
   }
 
   // remove data from local storage
-  static removeItem(key: string) {
-    if (typeof window === 'undefined') {
-      return null
-    }
-    return localStorage.removeItem(key)
+  static removeItem(key: string): void {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(key)
   }
 }

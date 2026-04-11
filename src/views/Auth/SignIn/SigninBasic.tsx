@@ -25,8 +25,8 @@ export default function LoginPage() {
   const router = useRouter()
   const [login, { isLoading }] = useLoginMutation()
 
-  const { isAuthenticated: reduxAuthenticated } = useAppSelector(
-    (state) => state.Auth || { isAuthenticated: false }
+  const reduxAuthenticated = useAppSelector(
+    (state) => state.Auth?.isAuthenticated ?? false
   )
 
   useEffect(() => {
