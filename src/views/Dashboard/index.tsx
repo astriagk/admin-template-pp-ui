@@ -49,7 +49,7 @@ const Dashboard = () => {
   const { data: parentsData } = useGetParentListQuery({ user_type: UserRoles.PARENT })
   const { data: driversData } = useGetDriverListQuery({ user_type: UserRoles.DRIVER })
   const { data: studentsData } = useGetStudentListQuery()
-  const { data: activeTripsData } = useGetTripListQuery({ status: 'ongoing' })
+  const { data: activeTripsData } = useGetTripListQuery({ status: ['ongoing'] })
   const { data: paymentsData } = useGetPaymentListQuery()
 
   const totalParents = parentsData?.data?.length ?? 0
