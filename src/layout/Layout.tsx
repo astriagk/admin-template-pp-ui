@@ -7,7 +7,7 @@ import Head from 'next/head'
 
 import { menu } from '@src/data/Sidebar/menu'
 import { MainMenu, MegaMenu, SubMenu } from '@src/dtos'
-import { STORAGE_KEYS } from '@src/shared/constants/enums'
+import { STORAGE_KEYS, THEME_STORAGE_MAP } from '@src/shared/constants/enums'
 import { LAYOUT_TYPES, SIDEBAR_SIZE } from '@src/shared/constants/layout'
 import LocalStorage from '@src/utils/LocalStorage'
 import {
@@ -174,8 +174,7 @@ export default function Layout({
   }
 
   const sidebarColors =
-    (typeof document !== 'undefined' &&
-      localStorage.getItem('data-sidebar-colors')) ||
+    LocalStorage.getItem(THEME_STORAGE_MAP['data-sidebar-colors']) ??
     layoutSidebarColor
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+import LocalStorage from './LocalStorage'
+
 // Generic type for LocalStorage data
 export type StorageData<T> = T | null
 
@@ -16,22 +18,22 @@ export interface EventItem extends LocalStorageRecord {
 
 export const getLocalStorage = <T>(key: string): StorageData<T> => {
   if (typeof window === 'undefined') return null
-  const listData = localStorage.getItem(key)
-  return listData ? (JSON.parse(listData) as T) : null
+  const raw = LocalStorage.getItem(key)
+  return raw ? (JSON.parse(raw) as T) : null
 }
 
 // Set list data in storage
 export const createLocalStorage = <T>(key: string, data: T): boolean => {
   if (typeof window === 'undefined') return false
-  localStorage.setItem(key, JSON.stringify(data))
+  LocalStorage.setItem(key, JSON.stringify(data))
   return true
 }
 
 // Delete list data in storage
 export const deleteLocalStorage = (key: string): boolean => {
   if (typeof window === 'undefined') return false
-  if (localStorage.getItem(key)) {
-    localStorage.removeItem(key)
+  if (LocalStorage.getItem(key) !== null) {
+    LocalStorage.removeItem(key)
     return true
   }
   return false
@@ -50,7 +52,7 @@ export const addLocalStorageRecord = <T extends LocalStorageRecord>(
   const newRecord = { ...listRecord, id: newRecordId } as T
 
   listData.push(newRecord)
-  localStorage.setItem(key, JSON.stringify(listData))
+  LocalStorage.setItem(key, JSON.stringify(listData))
   return true
 }
 
@@ -73,7 +75,7 @@ export const updateLocalStorageRecord = <T extends LocalStorageRecord>(
     listData.push(listRecord)
   }
 
-  localStorage.setItem(key, JSON.stringify(listData))
+  LocalStorage.setItem(key, JSON.stringify(listData))
   return true
 }
 
@@ -89,7 +91,7 @@ export const deleteLocalStorageRecord = (params: {
 
   if (params.multipleRecords) {
     listData = listData.filter((item) => !params.listRecord.includes(item.id))
-    localStorage.setItem(params.key, JSON.stringify(listData))
+    LocalStorage.setItem(params.key, JSON.stringify(listData))
     return true
   }
 
