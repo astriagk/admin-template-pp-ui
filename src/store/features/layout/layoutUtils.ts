@@ -1,3 +1,6 @@
+import { THEME_STORAGE_MAP } from '@src/shared/constants/enums'
+import LocalStorage from '@src/utils/LocalStorage'
+
 /**
  * Changes the body attribute
  */
@@ -12,11 +15,13 @@ const removeAttribute = (attribute: string) => {
     document.documentElement.removeAttribute(attribute)
 }
 
+// Resolve HTML attribute name → obfuscated localStorage key
+const storageKey = (attr: string): string => THEME_STORAGE_MAP[attr] ?? attr
+
 // get previous theme data
 const getPreviousStorageData = (key: string): string | null => {
   try {
-    const value = localStorage.getItem(key)
-    return value ? value : null
+    return LocalStorage.getItem(storageKey(key))
   } catch (error) {
     console.error('Error accessing localStorage', error)
     return null
@@ -26,7 +31,7 @@ const getPreviousStorageData = (key: string): string | null => {
 // set new theme data
 const setNewThemeData = (key: string, value: string) => {
   try {
-    localStorage.setItem(key, value)
+    LocalStorage.setItem(storageKey(key), value)
   } catch (error) {
     console.error('Error accessing localStorage', error)
   }
@@ -45,7 +50,7 @@ const appendDarkModeClass = (
 // remove existing theme data
 const removeThemeData = (existingItem: string) => {
   try {
-    localStorage.removeItem(existingItem)
+    LocalStorage.removeItem(storageKey(existingItem))
   } catch (error) {
     console.error('Error accessing localStorage', error)
   }
