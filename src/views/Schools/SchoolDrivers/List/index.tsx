@@ -2,8 +2,6 @@
 
 import React, { useMemo, useState } from 'react'
 
-import { useRouter } from 'next/navigation'
-
 import { SchoolDriverItem } from '@src/dtos/schoolAdmin'
 import BreadCrumb from '@src/shared/common/BreadCrumb'
 import Pagination from '@src/shared/common/Pagination'
@@ -13,6 +11,7 @@ import {
   headerKeys,
 } from '@src/shared/constants/columns'
 import { STORAGE_KEYS } from '@src/shared/constants/enums'
+import UnassignDriverModal from './UnassignDriverModal'
 import TableContainer from '@src/shared/custom/table/table'
 import {
   useGetSchoolDriversQuery,
@@ -33,13 +32,15 @@ const ApprovalBadge = ({ status }: { status: string }) => {
 }
 
 const SchoolDriversList = () => {
-  const router = useRouter()
   const { data: schoolsData } = useGetSchoolsListQuery()
   const [selectedSchoolId, setSelectedSchoolId] = React.useState<string>(() => {
     const first = schoolsData?.data?.[0]?._id
     return first || ''
   })
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [driverToUnassign, setDriverToUnassign] =
+    useState<SchoolDriverItem | null>(null)
+  const [isUnassigning, setIsUnassigning] = useState(false)
   const [removeDriver] = useRemoveDriverFromSchoolMutation()
   const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
   const user = adminData ? JSON.parse(adminData) : null
@@ -49,17 +50,25 @@ const SchoolDriversList = () => {
   const itemsPerPage = 10
   const [currentPage, setCurrentPage] = useState(1)
 
-  const firstSchoolId = selectedSchoolId || schoolsData?.data?.[0]?._id || ''
+  const firstSchoolId =
+    schoolId || selectedSchoolId || schoolsData?.data?.[0]?._id || ''
 
   const { data: schoolDriversData } = useGetSchoolDriversQuery(firstSchoolId, {
     skip: !firstSchoolId,
   })
 
-  // const handleRemove = (driverId: string) => {
-  //   if (window.confirm('Remove this driver from the school?')) {
-  //     removeDriver(driverId)
-  //   }
-  // }
+  const handleConfirmUnassign = async () => {
+    if (!driverToUnassign) return
+    setIsUnassigning(true)
+    try {
+      await removeDriver(driverToUnassign.user_id).unwrap()
+    } catch {
+      // error handled by mutation
+    } finally {
+      setIsUnassigning(false)
+      setDriverToUnassign(null)
+    }
+  }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
@@ -110,26 +119,24 @@ const SchoolDriversList = () => {
         ),
       },
 
-      // {
-      //   accessorKey: accessorkeys.schoolDriversList.actions,
-      //   header: headerKeys.schoolDriversList.actions,
-      //   cell: ({ row }: { row: { original: SchoolDriverItem } }) => {
-      //     const driverId = row.original._id
-      //     return (
-      //       <div className="flex justify-end gap-2">
-      //         {/* <button
-      //           className="btn btn-sub-primary btn-icon !size-8 rounded-md"
-      //           onClick={() =>
-      //             router.push(`/users/drivers/details/${driverId}`)
-      //           }>
-      //           <i className="ri-eye-line"></i>
-      //         </button> */}
-      //       </div>
-      //     )
-      //   },
-      // },
+      {
+        accessorKey: accessorkeys.schoolDriversList.actions,
+        header: headerKeys.schoolDriversList.actions,
+        cell: ({ row }: { row: { original: SchoolDriverItem } }) => {
+          return (
+            <div className="flex justify-end gap-2">
+              <button
+                className="btn btn-sub-red btn-icon !size-8 rounded-md"
+                title="Unassign from school"
+                onClick={() => setDriverToUnassign(row.original)}>
+                <i className="ri-user-unfollow-line"></i>
+              </button>
+            </div>
+          )
+        },
+      },
     ],
-    [router]
+    []
   )
 
   return (
@@ -204,6 +211,12 @@ const SchoolDriversList = () => {
           </div>
         </div>
       </div>
+      <UnassignDriverModal
+        driver={driverToUnassign}
+        isUnassigning={isUnassigning}
+        onConfirm={handleConfirmUnassign}
+        onClose={() => setDriverToUnassign(null)}
+      />
     </React.Fragment>
   )
 }

@@ -78,6 +78,16 @@ export const subscriptionApi = baseApi.injectEndpoints({
         providesTags: [AuthTags.SUBSCRIPTION],
       }
     ),
+    getAllSchoolSubscriptions: builder.query<
+      SchoolSubscriptionListResponse,
+      void
+    >({
+      query: () => ({
+        url: NEXT_PUBLIC_ADMIN_SCHOOL_SUBSCRIPTIONS_API,
+        method: ApiMethods.GET,
+      }),
+      providesTags: [AuthTags.SUBSCRIPTION],
+    }),
     getSchoolSubscriptions: builder.query<
       SchoolSubscriptionListResponse,
       string
@@ -172,6 +182,7 @@ export const subscriptionApi = baseApi.injectEndpoints({
 })
 
 export const {
+  useGetAllSchoolSubscriptionsQuery,
   useGetSubscriptionPlansQuery,
   useCreateSubscriptionPlanMutation,
   useUpdateSubscriptionPlanMutation,

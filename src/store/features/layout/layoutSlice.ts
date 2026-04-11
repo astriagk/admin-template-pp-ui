@@ -75,7 +75,7 @@ export interface LayoutItemsState {
 
 export const initialState: LayoutItemsState = {
   layoutType: LAYOUT_TYPES.VERTICAL,
-  layoutWidth: LAYOUT_CONTENT_WIDTH.DEFAULT,
+  layoutWidth: LAYOUT_CONTENT_WIDTH.FLUID,
   layoutMode: LAYOUT_MODE_TYPES.LIGHT,
   layoutSidebar: SIDEBAR_SIZE.DEFAULT,
   layoutSidebarColor: SIDEBAR_COLOR.LIGHT,

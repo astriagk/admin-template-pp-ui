@@ -22,7 +22,7 @@ const Settings = () => {
                 <input
                   type="text"
                   className="form-input w-full"
-                  defaultValue="Ping Parent"
+                  defaultValue="Skolo"
                   placeholder="Site Name"
                 />
               </div>
@@ -33,7 +33,7 @@ const Settings = () => {
                 <input
                   type="email"
                   className="form-input w-full"
-                  placeholder="admin@pingparent.com"
+                  placeholder="admin@skolo.com"
                 />
               </div>
               <div>

@@ -34,8 +34,8 @@ interface PlanFormValues {
   plan_name: string
   plan_type: string
   pricing_model: string
-  price: number
-  per_kid_price: number
+  price: number | undefined
+  per_kid_price: number | undefined
   kids_min: number
   kids_max: number
   features: SubscriptionPlanFeature[]
@@ -51,8 +51,8 @@ const defaultValues: PlanFormValues = {
   plan_name: '',
   plan_type: PlanType.MONTHLY,
   pricing_model: PricingModel.FLAT,
-  price: 0,
-  per_kid_price: 0,
+  price: undefined,
+  per_kid_price: undefined,
   kids_min: 1,
   kids_max: 1,
   features: [defaultFeature()],
@@ -86,13 +86,14 @@ const PlanModal: React.FC<PlanModalProps> = ({
   const isLoading = isCreating || isUpdating
 
   useEffect(() => {
+    if (!show) return
     if (planData && isEditMode) {
       reset({
         plan_name: planData.plan_name,
         plan_type: planData.plan_type,
         pricing_model: planData.pricing_model,
         price: planData.price,
-        per_kid_price: planData.per_kid_price ?? 0,
+        per_kid_price: planData.per_kid_price ?? undefined,
         kids_min: planData.kids.min,
         kids_max: planData.kids.max,
         features: planData.features.length
@@ -102,14 +103,14 @@ const PlanModal: React.FC<PlanModalProps> = ({
     } else if (!planData) {
       reset(defaultValues)
     }
-  }, [planData, isEditMode, reset])
+  }, [show, planData, isEditMode, reset])
 
   const onSubmit = async (data: PlanFormValues, onClose: () => void) => {
     let payload: any = {
       plan_name: data.plan_name,
       plan_type: data.plan_type,
       pricing_model: data.pricing_model,
-      price: Number(data.price),
+      price: Number(data.price ?? 0),
       currency: 'INR',
       kids: { min: Number(data.kids_min), max: Number(data.kids_max) },
       features: data.features.filter((f) => f.key || f.label),
@@ -121,7 +122,7 @@ const PlanModal: React.FC<PlanModalProps> = ({
       data.pricing_model === 'per_kid' ||
       data.pricing_model === 'base_plus_per_kid'
     ) {
-      payload.per_kid_price = String(data.per_kid_price)
+      payload.per_kid_price = String(data.per_kid_price ?? 0)
     }
 
     try {
@@ -157,7 +158,8 @@ const PlanModal: React.FC<PlanModalProps> = ({
     }
   }
 
-  const getModalTitle = () => (isEditMode ? 'Edit Plan' : 'Add Plan')
+  const getModalTitle = () =>
+    isEditMode ? 'Edit Subscriptions' : 'Add Subscriptions'
 
   return (
     <Modal
@@ -226,12 +228,13 @@ const PlanModal: React.FC<PlanModalProps> = ({
               </label>
               <input
                 type="number"
-                min={0}
+                min={1}
+                placeholder="Enter price"
                 className="form-input"
                 {...register('price', {
                   required: 'Price is required.',
                   valueAsNumber: true,
-                  min: { value: 0, message: 'Price must be ≥ 0.' },
+                  min: { value: 1, message: 'Price must be > 0.' },
                 })}
               />
               {errors.price && (
@@ -244,9 +247,13 @@ const PlanModal: React.FC<PlanModalProps> = ({
               <label className="form-label">Per-Kid Price (₹)</label>
               <input
                 type="number"
-                min={0}
+                min={1}
+                placeholder="Enter per-kid price"
                 className="form-input"
-                {...register('per_kid_price', { valueAsNumber: true })}
+                {...register('per_kid_price', {
+                  valueAsNumber: true,
+                  min: { value: 1, message: 'Per-Kid Price must be > 0.' },
+                })}
               />
             </div>
 

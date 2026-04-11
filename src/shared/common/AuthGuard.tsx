@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -29,17 +29,33 @@ const LoadingSpinner = () => (
 export default function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const { data, error, isLoading } = useVerifyTokenQuery()
+  const [hasCheckedToken, setHasCheckedToken] = useState(false)
+  const [hasToken, setHasToken] = useState(false)
+  const { data, error, isLoading } = useVerifyTokenQuery(undefined, {
+    skip: !hasCheckedToken || !hasToken,
+  })
 
-  // Redirect to signin if no token
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
-      if (!token) {
-        router.push(`${paths.AUTH.SIGNIN_BASIC}`)
-      }
+    const token =
+      typeof window !== 'undefined'
+        ? localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
+        : null
+
+    setHasToken(Boolean(token))
+    setHasCheckedToken(true)
+  }, [])
+
+  useEffect(() => {
+    if (hasCheckedToken && !hasToken) {
+      router.replace(paths.AUTH.SIGNIN_BASIC)
     }
-  }, [router])
+  }, [hasCheckedToken, hasToken, router])
+
+  useEffect(() => {
+    if (error) {
+      router.replace(paths.AUTH.SIGNIN_BASIC)
+    }
+  }, [error, router])
 
   // Redirect to dashboard if user role is not allowed on current route
   useEffect(() => {
@@ -48,7 +64,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
       const allowedRoles = routeRoles[pathname]
 
       if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
-        router.replace('/dashboard')
+        router.replace(paths.DASHBOARD)
       }
     }
   }, [data, pathname, router])
@@ -58,15 +74,11 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="mt-4 text-gray-600">
-            404 | {MESSAGES.COMMON.ERROR.TOKEN_VERIFICATION_FAILED}
-          </p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner />
+  }
+
+  if (!hasCheckedToken || !hasToken) {
+    return <LoadingSpinner />
   }
 
   if (data) {

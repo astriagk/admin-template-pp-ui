@@ -25,7 +25,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   const route = routes.find((r) => r.path === pathname)
 
   useEffect(() => {
-    document.title = route ? `${route.title} | Ping Parent` : 'Ping Parent'
+    document.title = route ? `${route.title} | Skolo` : 'Skolo'
   }, [route])
 
   return (

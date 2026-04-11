@@ -78,9 +78,18 @@ const RedemptionCodesList = () => {
 
   const codesArr: RedemptionCode[] = codesData?.data ?? []
 
-  const filteredRecords = codesArr.filter((item: RedemptionCode) =>
-    item.code.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredRecords = codesArr.filter((item: RedemptionCode) => {
+    const q = searchQuery.toLowerCase()
+    if (!q) return true
+    return (
+      item.code.toLowerCase().includes(q) ||
+      (item.student_name ?? '').toLowerCase().includes(q) ||
+      (item.student_class ?? '').toLowerCase().includes(q) ||
+      (item.student_section ?? '').toLowerCase().includes(q) ||
+      (item.parent_name ?? '').toLowerCase().includes(q) ||
+      (item.parent_phone ?? '').toLowerCase().includes(q)
+    )
+  })
 
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedData = filteredRecords.slice(
@@ -107,41 +116,58 @@ const RedemptionCodesList = () => {
       {
         accessorKey: accessorkeys.redemptionCodesList.studentName,
         header: headerKeys.redemptionCodesList.studentName,
-        cell: ({ row }: { row: { original: RedemptionCode } }) =>
-          row.original.student_name || '—',
+        cell: ({ row }: { row: { original: RedemptionCode } }) => {
+          const name = row.original.student_name
+          const cls = row.original.student_class
+          const section = row.original.student_section
+          const classLabel = cls
+            ? section
+              ? `Class ${cls} – ${section}`
+              : `Class ${cls}`
+            : null
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-sm">{name || '—'}</span>
+              {classLabel && (
+                <span className="text-xs text-gray-400 dark:text-dark-500">
+                  {classLabel}
+                </span>
+              )}
+            </div>
+          )
+        },
       },
       {
-        accessorKey: accessorkeys.redemptionCodesList.studentClass,
-        header: headerKeys.redemptionCodesList.studentClass,
-        cell: ({ row }: { row: { original: any } }) => {
-          const cls = row.original.class || row.original.student_class || ''
-          const section = row.original.section || ''
-          if (!cls) return '—'
-          return section ? `${cls} - ${section}` : cls
+        accessorKey: accessorkeys.redemptionCodesList.parentInfo,
+        header: headerKeys.redemptionCodesList.parentInfo,
+        cell: ({ row }: { row: { original: RedemptionCode } }) => {
+          const name = row.original.parent_name
+          const phone = row.original.parent_phone
+          if (!name && !phone) return '—'
+          return (
+            <div className="flex flex-col gap-0.5">
+              {name && <span className="text-sm font-medium">{name}</span>}
+              {phone && (
+                <span className="text-xs text-gray-400 dark:text-dark-500">
+                  {phone}
+                </span>
+              )}
+            </div>
+          )
         },
       },
       {
         accessorKey: accessorkeys.redemptionCodesList.codeStatus,
         header: headerKeys.redemptionCodesList.codeStatus,
-        cell: ({ row }: { row: { original: any } }) => {
-          const isRedeemed =
-            row.original.is_redeemed ?? row.original.status === 'redeemed'
-          const badge = isRedeemed
-            ? badgeMaps['redeemed']
-            : badgeMaps['pending']
+        cell: ({ row }: { row: { original: RedemptionCode } }) => {
+          const isRedeemed = row.original.is_redeemed ?? row.original.status === 'redeemed'
+          const badge = isRedeemed ? badgeMaps['redeemed'] : badgeMaps['pending']
           return (
-            <span
-              className={`badge inline-flex items-center gap-1 ${badge.className}`}>
+            <span className={`badge inline-flex items-center gap-1 ${badge.className}`}>
               {badge.label}
             </span>
           )
         },
-      },
-      {
-        accessorKey: accessorkeys.redemptionCodesList.redeemedBy,
-        header: headerKeys.redemptionCodesList.redeemedBy,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.redeemed_by_name || '—',
       },
       {
         accessorKey: accessorkeys.redemptionCodesList.redeemedAt,
@@ -152,7 +178,7 @@ const RedemptionCodesList = () => {
       {
         accessorKey: accessorkeys.redemptionCodesList.validUntil,
         header: headerKeys.redemptionCodesList.validUntil,
-        cell: ({ row }: { row: { original: any } }) => {
+        cell: ({ row }: { row: { original: RedemptionCode } }) => {
           const endDate = row.original.end_date
           if (!endDate) return '—'
           const isExpired = new Date(endDate) < new Date()
@@ -230,7 +256,7 @@ const RedemptionCodesList = () => {
                   <input
                     type="text"
                     className="ltr:pl-9 rtl:pr-9 form-input ltr:group-[&.right]/form:pr-9 rtl:group-[&.right]/form:pl-9 ltr:group-[&.right]/form:pl-4 rtl:group-[&.right]/form:pr-4"
-                    placeholder="Search Code"
+                    placeholder="Search by code, student name or class..."
                     value={searchQuery}
                     onChange={handleSearchChange}
                   />

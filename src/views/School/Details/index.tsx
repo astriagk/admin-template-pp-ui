@@ -6,7 +6,11 @@ import { useParams } from 'next/navigation'
 
 import { SchoolAdmin } from '@src/dtos/schoolAdmin'
 import BreadCrumb from '@src/shared/common/BreadCrumb'
-import { accessorkeys, badges, headerKeys, approvalStatusBadge } from '@src/shared/constants/columns'
+import {
+  accessorkeys,
+  badgeMaps,
+  headerKeys,
+} from '@src/shared/constants/columns'
 import TableContainer from '@src/shared/custom/table/table'
 import {
   useDeactivateSchoolAdminMutation,
@@ -79,15 +83,26 @@ const SchoolDetails = () => {
         header: headerKeys.schoolDetails.id,
         cell: ({ row }: { row: { index: number } }) => row.index + 1,
       },
-      { accessorKey: accessorkeys.schoolDetails.name, header: headerKeys.schoolDetails.name },
-      { accessorKey: accessorkeys.schoolDetails.email, header: headerKeys.schoolDetails.email },
-      { accessorKey: accessorkeys.schoolDetails.phoneNumber, header: headerKeys.schoolDetails.phoneNumber },
+      {
+        accessorKey: accessorkeys.schoolDetails.name,
+        header: headerKeys.schoolDetails.name,
+      },
+      {
+        accessorKey: accessorkeys.schoolDetails.email,
+        header: headerKeys.schoolDetails.email,
+      },
+      {
+        accessorKey: accessorkeys.schoolDetails.phoneNumber,
+        header: headerKeys.schoolDetails.phoneNumber,
+      },
       {
         accessorKey: accessorkeys.schoolDetails.isActive,
         header: headerKeys.schoolDetails.isActive,
         cell: ({ row }: { row: { original: SchoolAdmin } }) => {
-          const mapKey = String(row.original.is_active) as keyof typeof badges
-          const { label, className } = badges[mapKey] || badges.undefined
+          const mapKey = String(
+            row.original.is_active
+          ) as keyof typeof badgeMaps
+          const { label, className } = badgeMaps[mapKey] || badgeMaps.undefined
           return (
             <span
               className={`badge inline-flex items-center gap-1 ${className}`}>
@@ -122,9 +137,18 @@ const SchoolDetails = () => {
         header: headerKeys.schoolDetails.id,
         cell: ({ row }: { row: { index: number } }) => row.index + 1,
       },
-      { accessorKey: accessorkeys.schoolDetails.name, header: headerKeys.schoolDetails.name },
-      { accessorKey: accessorkeys.schoolDetails.email, header: headerKeys.schoolDetails.email },
-      { accessorKey: accessorkeys.schoolDetails.phoneNumber, header: headerKeys.schoolDetails.phoneNumber },
+      {
+        accessorKey: accessorkeys.schoolDetails.name,
+        header: headerKeys.schoolDetails.name,
+      },
+      {
+        accessorKey: accessorkeys.schoolDetails.email,
+        header: headerKeys.schoolDetails.email,
+      },
+      {
+        accessorKey: accessorkeys.schoolDetails.phoneNumber,
+        header: headerKeys.schoolDetails.phoneNumber,
+      },
       {
         accessorKey: accessorkeys.schoolDetails.approvalStatus,
         header: headerKeys.schoolDetails.approvalStatus,
@@ -143,8 +167,10 @@ const SchoolDetails = () => {
         accessorKey: accessorkeys.schoolDetails.isActive,
         header: headerKeys.schoolDetails.isActive,
         cell: ({ row }: { row: { original: any } }) => {
-          const mapKey = String(row.original.is_active) as keyof typeof badges
-          const { label, className } = badges[mapKey] || badges.undefined
+          const mapKey = String(
+            row.original.is_active
+          ) as keyof typeof badgeMaps
+          const { label, className } = badgeMaps[mapKey] || badgeMaps.undefined
           return (
             <span
               className={`badge inline-flex items-center gap-1 ${className}`}>

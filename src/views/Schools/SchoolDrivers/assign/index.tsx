@@ -22,6 +22,21 @@ import { formatDate } from '@src/utils/formatters'
 import { Plus, Search, Trash2, UserPlus } from 'lucide-react'
 import { toast } from 'react-toastify'
 
+const AVATAR_COLORS = [
+  'bg-red-500',
+  'bg-orange-500',
+  'bg-amber-500',
+  'bg-green-500',
+  'bg-teal-500',
+  'bg-blue-500',
+  'bg-indigo-500',
+  'bg-violet-500',
+  'bg-pink-500',
+]
+
+const getAvatarColor = (name: string) =>
+  AVATAR_COLORS[(name.charCodeAt(0) || 0) % AVATAR_COLORS.length]
+
 const DriversAssignmentsList = () => {
   const adminData = LocalStorage.getItem(STORAGE_KEYS.ADMIN)
   const user = adminData ? JSON.parse(adminData) : null
@@ -42,6 +57,7 @@ const DriversAssignmentsList = () => {
 
   const filteredDrivers = allDrivers.filter((driver) => {
     if (selectedIds.has(driver._id)) return false
+    if (driver.school_id) return false
     if (!searchQuery.trim()) return false
     const query = searchQuery.toLowerCase()
     return (
@@ -102,7 +118,25 @@ const DriversAssignmentsList = () => {
       {
         accessorKey: accessorkeys.assignDriversList.name,
         header: headerKeys.assignDriversList.name,
-        cell: ({ row }: { row: { original: any } }) => row.original.name || '—',
+        cell: ({ row }: { row: { original: any } }) => {
+          const driver = row.original
+          return (
+            <div className="flex items-center gap-3">
+              {driver.photo_url ? (
+                <img
+                  src={driver.photo_url}
+                  alt={driver.name}
+                  className="size-8 rounded-full object-cover shrink-0"
+                />
+              ) : (
+                <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary shrink-0">
+                  {(driver.name || '?').charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span>{driver.name || '—'}</span>
+            </div>
+          )
+        },
       },
       {
         accessorKey: accessorkeys.assignDriversList.email,
@@ -162,13 +196,6 @@ const DriversAssignmentsList = () => {
       <div className="grid grid-cols-12 gap-x-space">
         {/* Search Drivers Section */}
         <div className="col-span-12 card">
-          <div className="card-header">
-            <h6 className="card-title">Search Drivers</h6>
-            <p className="text-gray-500 dark:text-dark-500 text-sm">
-              Search for drivers by name, email, or phone to add them to your
-              school
-            </p>
-          </div>
           <div className="card-body">
             <div className="relative group/form mb-4 max-w-md">
               <input
@@ -198,50 +225,51 @@ const DriversAssignmentsList = () => {
                     return (
                       <div
                         key={driver._id}
-                        className="border border-gray-200 dark:border-dark-800 rounded-lg p-4 flex flex-col gap-2 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            {driver.photo_url ? (
-                              <img
-                                src={driver.photo_url}
-                                alt={driver.name}
-                                className="size-10 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="size-10 rounded-full bg-gray-200 dark:bg-dark-800 flex items-center justify-center text-sm font-medium text-gray-500 dark:text-dark-500">
-                                {(driver.name || '?').charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                            <h6 className="font-semibold text-sm">
+                        className="border border-gray-200 dark:border-dark-800 rounded-xl p-4 flex items-center gap-4 hover:shadow-md hover:border-primary/30 transition-all">
+                        {/* Avatar */}
+                        {driver.photo_url ? (
+                          <img
+                            src={driver.photo_url}
+                            alt={driver.name}
+                            className="size-12 rounded-full object-cover shrink-0"
+                          />
+                        ) : (
+                          <div
+                            className={`size-12 rounded-full flex items-center justify-center text-base font-semibold text-white shrink-0 ${getAvatarColor(driver.name || '?')}`}>
+                            {(driver.name || '?').charAt(0).toUpperCase()}
+                          </div>
+                        )}
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h6 className="font-semibold text-sm truncate">
                               {driver.name || '—'}
                             </h6>
+                            <span
+                              className={`badge inline-flex items-center gap-1 text-xs shrink-0 ${badge.className}`}>
+                              {badge.label}
+                            </span>
                           </div>
-                          <span
-                            className={`badge inline-flex items-center gap-1 text-xs ${badge.className}`}>
-                            {badge.label}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-dark-500 space-y-1">
-                          <p>
-                            <span className="font-medium">Email:</span>{' '}
+                          <p className="text-xs text-gray-500 dark:text-dark-500 truncate">
                             {driver.email || '—'}
                           </p>
-                          <p>
-                            <span className="font-medium">Phone:</span>{' '}
-                            {driver.phone_number || '—'}
-                          </p>
-                          <p>
-                            <span className="font-medium">Joined:</span>{' '}
-                            {driver.created_at
-                              ? formatDate(driver.created_at)
-                              : '—'}
-                          </p>
+                          <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 dark:text-dark-500">
+                            <span>{driver.phone_number || '—'}</span>
+                            {driver.created_at && (
+                              <>
+                                <span>·</span>
+                                <span>{formatDate(driver.created_at)}</span>
+                              </>
+                            )}
+                          </div>
                         </div>
+
+                        {/* Action */}
                         <button
-                          className="btn btn-sub-primary btn-sm mt-2 w-full"
+                          className="btn btn-sub-primary btn-sm shrink-0"
                           onClick={() => handleAddDriver(driver)}>
-                          <Plus className="inline-block ltr:mr-1 rtl:ml-1 size-4" />
-                          Add
+                          <Plus className="size-4" />
                         </button>
                       </div>
                     )

@@ -52,40 +52,36 @@ const DriversList = () => {
         cell: ({ row }: { row: { index: number } }) => row.index + 1,
       },
       {
-        accessorKey: accessorkeys.driversList.driverUniqueId,
-        header: headerKeys.driversList.driverUniqueId,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.driver_unique_id || '—',
-      },
-      {
         accessorKey: accessorkeys.driversList.name,
         header: headerKeys.driversList.name,
+        cell: ({ row }: { row: { original: any } }) => (
+          <div className="flex items-center gap-2">
+            {row.original.photo_url ? (
+              <img
+                src={row.original.photo_url}
+                alt={row.original.name}
+                className="size-8 rounded-full object-cover"
+              />
+            ) : (
+              <span className="size-8 rounded-full bg-gray-200 dark:bg-dark-700 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-dark-300">
+                {(row.original.name ?? '?')[0].toUpperCase()}
+              </span>
+            )}
+            <span>{row.original.name || '—'}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: accessorkeys.driversList.email,
+        header: headerKeys.driversList.email,
+        cell: ({ row }: { row: { original: any } }) =>
+          row.original.email || '—',
       },
       {
         accessorKey: accessorkeys.driversList.phoneNumber,
         header: headerKeys.driversList.phoneNumber,
         cell: ({ row }: { row: { original: any } }) =>
           row.original.phone_number || '—',
-      },
-      {
-        accessorKey: accessorkeys.driversList.vehicleType,
-        header: headerKeys.driversList.vehicleType,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.vehicle_type
-            ? String(row.original.vehicle_type).replace(/_/g, ' ')
-            : '—',
-      },
-      {
-        accessorKey: accessorkeys.driversList.vehicleNumber,
-        header: headerKeys.driversList.vehicleNumber,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.vehicle_number || '—',
-      },
-      {
-        accessorKey: accessorkeys.driversList.school,
-        header: headerKeys.driversList.school,
-        cell: ({ row }: { row: { original: any } }) =>
-          row.original.school_name || 'Independent',
       },
       {
         accessorKey: accessorkeys.driversList.approvalStatus,
@@ -102,11 +98,11 @@ const DriversList = () => {
         },
       },
       {
-        accessorKey: accessorkeys.driversList.isAvailable,
-        header: headerKeys.driversList.isAvailable,
+        accessorKey: accessorkeys.driversList.isActive,
+        header: headerKeys.driversList.isActive,
         cell: ({ row }: { row: { original: any } }) => {
           const key = String(
-            row.original.is_available ?? false
+            row.original.is_active ?? false
           ) as keyof typeof badgeMaps
           const badge = badgeMaps[key] ?? badgeMaps['undefined']
           return (
@@ -115,23 +111,6 @@ const DriversList = () => {
               {badge.label}
             </span>
           )
-        },
-      },
-      {
-        accessorKey: accessorkeys.driversList.rating,
-        header: headerKeys.driversList.rating,
-        cell: ({ row }: { row: { original: any } }) => {
-          const rating = row.original.rating
-          return rating != null ? `⭐ ${Number(rating).toFixed(1)}` : '—'
-        },
-      },
-      {
-        accessorKey: accessorkeys.driversList.studentCount,
-        header: headerKeys.driversList.studentCount,
-        cell: ({ row }: { row: { original: any } }) => {
-          const current = row.original.current_student_count ?? 0
-          const capacity = row.original.vehicle_capacity ?? '?'
-          return `${current} / ${capacity}`
         },
       },
       {

@@ -17,7 +17,7 @@ export default function NonLayoutWrapper({ children }: LayoutWrapperProps) {
   const route = routes.find((r) => r.path === pathname)
 
   useEffect(() => {
-    document.title = route ? `${route.title} | Ping Parent` : 'Ping Parent'
+    document.title = route ? `${route.title} | Skolo` : 'Skolo'
   }, [route])
 
   return <Layout2>{children}</Layout2>
