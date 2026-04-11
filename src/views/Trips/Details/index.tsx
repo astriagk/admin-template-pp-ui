@@ -47,6 +47,11 @@ const TripDetails = () => {
 
   const trip = tripResponse?.data
 
+  const flattenedStudents = useMemo(() => {
+    if (!trip?.students_by_parent) return []
+    return trip.students_by_parent.flatMap((parent) => parent.students)
+  }, [trip?.students_by_parent])
+
   const studentColumns = useMemo(
     () => [
       {
@@ -233,13 +238,13 @@ const TripDetails = () => {
         <div className="col-span-12 card">
           <div className="card-header">
             <h6 className="card-title">
-              Students ({trip.students?.length || 0})
+              Students ({flattenedStudents.length || 0})
             </h6>
           </div>
           <div className="card-body">
             <TableContainer
               columns={studentColumns}
-              data={trip.students || []}
+              data={flattenedStudents}
               thClass="!font-medium cursor-pointer"
               divClass="overflow-x-auto table-box whitespace-nowrap"
               lastTrClass="text-end"
